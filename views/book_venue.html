@@ -555,7 +555,8 @@
 
       await new Promise(r => setTimeout(r, 600));
 
-      const venues = (VENUE_DATA[selectedSport] || []).map(v => ({ ...v, slots: generateSlots(v.id) }));
+      const res = await fetch(`/booking/api?sport=${selectSport}`);
+      const venues = await res.json();
       renderVenues(venues);
 
       btn.classList.remove('loading');
@@ -636,7 +637,7 @@
       btn.childNodes.forEach(n => { if (n.nodeType === 3) n.textContent = open ? ' Hide timings' : ' See timings'; });
     }
 
-    function selectSlot(el) {
+    async function selectSlot(el) {
       if (el.dataset.available !== 'true') return;
       const venueId = el.dataset.venueId;
       const slotId  = el.dataset.slotId;
@@ -648,7 +649,7 @@
         delete selectedSlots[venueId];
         document.getElementById(`strip-${venueId}`).classList.remove('visible');
         return;
-=======
+      }
       try {
         const res = await fetch('/booking/api', {
           method: 'POST',
@@ -667,8 +668,8 @@
       } catch (err) {
         // No backend yet — navigate to next step with sport param
         window.location.href = `venues.html?sport=${hidden.value}`;
->>>>>>> Stashed changes
       }
+
       el.classList.add('selected');
       selectedSlots[venueId] = slotId;
       document.getElementById(`strip-time-${venueId}`).textContent = time;

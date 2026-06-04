@@ -8,6 +8,6 @@ const {
 
 
 bookingRouter.get("/", handleGetBooking);
-bookingRouter.post("/api", handlePostBooking);
+bookingRouter.get("/api", handlePostBooking);
 bookingRouter.get("/venue", handleGetVenue);
 module.exports = bookingRouter;
