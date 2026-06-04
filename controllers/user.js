@@ -57,6 +57,7 @@ async function handleGetUserLogin(req,res){
 }
 
 async function handlePostUserLogin(req,res){
+    console.log("Login Body: ", req.body);
     const {username,password} = req.body;
     const token = await User.matchPassword(username,password)
      if(!token){
