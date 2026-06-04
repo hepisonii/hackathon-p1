@@ -7,7 +7,8 @@ const {connectMongoDB} = require("./connections/database");
 const Path = require("path");
 const cookieParser = require("cookie-parser");
 const {checkAuth} = require("./middlewares/auth");
-const userRouter = require("./routes/user")
+const userRouter = require("./routes/user");
+const bookingRouter = require("./routes/booking");
 connectMongoDB(process.env.MONGODB_URL);
 
 app.use(express.json());
@@ -20,6 +21,7 @@ app.set("view engine","ejs")
 app.set("views", Path.resolve("./views"));
 
 app.use("/user", userRouter);
+app.use("/booking", bookingRouter);
 app.get("/", async (req,res) => {
     const user = req.user;
     if(!user)
@@ -27,7 +29,7 @@ app.get("/", async (req,res) => {
     else if(user.role === "venue-owner")
     return res.sendFile(Path.resolve(__dirname, "./views/home-venue-owner.html"));
     else
-    return res.sendFile(Path.resolve(__dirname, "./views/home-participant.html"));
+    return res.sendFile(Path.resolve(__dirname, "./views/home.html"));
 });
 
 app.get("/about", (req,res) => {

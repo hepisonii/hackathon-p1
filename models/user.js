@@ -47,7 +47,7 @@ const userSchema = new Schema({
     },
     sports: [{
         type: String,
-        enum: ["cricket", "badminton", "basketball", "pickleball"],
+        enum: ["cricket", "badminton", "basketball", "pickleball", "football"],
     }]
 }, {timestamps: true});
 

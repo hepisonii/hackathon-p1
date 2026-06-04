@@ -14,7 +14,9 @@ async function handleGetUserSignUpVenue(req,res){
 
 async function handlePostUserSignUp(req,res){
     console.log("Body: ",req.body);
-    const {fullname,username,password,age,gender,role,city} = req.body;
+    console.log("Sports: ", req.body.sports);
+    const {fullname,username,password,gender,role,city} = req.body;
+    const age = Number(req.body.age);
     const entry = await User.findOne({username});
     if(entry){
         return res.render("signup", {
@@ -23,6 +25,7 @@ async function handlePostUserSignUp(req,res){
     }
     if(role === "venue-owner"){
         const {venue_name, venue_address} = req.body;
+        const sports = req.body["sports[]"];
         const user = await User.create({
             fullname,
             username,
@@ -33,6 +36,7 @@ async function handlePostUserSignUp(req,res){
             city,
             venue_name,
             venue_address,
+            sports
         });
     }
     else if(role === "participant"){
