@@ -555,7 +555,7 @@
 
       await new Promise(r => setTimeout(r, 600));
 
-      const res = await fetch(`/booking/api?sport=${selectSport}`);
+      const res = await fetch(`/booking/api?sport=${selectedSport}`);
       const venues = await res.json();
       renderVenues(venues);
 

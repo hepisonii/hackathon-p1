@@ -6,7 +6,8 @@ async function handleGetBooking(req,res){
 }
 
 async function handlePostBooking(req,res){
-    const {sport} = req.body
+    const sport = req.query.sport
+    console.log("Sport: ",req.query);
     const city = req.user.city;
     const venues = await User.find(
   {
