@@ -36,8 +36,19 @@ const userSchema = new Schema({
     role: {
         type: String,
         required: true,
-        enum: ["participant", "venue-owner"]
-    }
+        enum: ["participant", "venue-owner"],
+    },
+    venue_name: {
+        type: String,
+        required: true,
+    },
+    venue_address: {
+        type: String,
+    },
+    sports: [{
+        type: String,
+        enum: ["cricket", "badminton", "basketball", "pickleball"],
+    }]
 }, {timestamps: true});
 
 userSchema.pre("save", async function (){

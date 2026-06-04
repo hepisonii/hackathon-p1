@@ -16,19 +16,34 @@ async function handlePostUserSignUp(req,res){
             error: "Username already exists"
         })
     }
-
-    const user = await User.create({
-        fullname,
-        username,
-        password,
-        age,
-        gender,
-        role,
-        city,
-    });
+    if(role === "venue-owner"){
+        const {venue_name, venue_address} = req.body;
+        const user = await User.create({
+            fullname,
+            username,
+            password,
+            age,
+            gender,
+            role,
+            city
+        });
+    }
+    else if(role === "participant"){
+        const user = await User.create({
+            fullname,
+            username,
+            password,
+            age,
+            gender,
+            role,
+            city
+        });
+    }
+    else{
+        return res.json({error: "Role is not defined"})
+    }
     return res.redirect("/user/login");
 }
-
 
 async function handleGetUserLogin(req,res){
     return res.render("login");

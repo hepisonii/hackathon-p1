@@ -1,8 +1,9 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const PORT = process.env.PORT;
 
-const {connectMongoDB} = require("./connections/connect");
+const {connectMongoDB} = require("./connections/database");
 const Path = require("path");
 const cookieParser = require("cookie-parser");
 const {checkAuth} = require("./middlewares/auth");
@@ -18,7 +19,7 @@ app.set("view engine","ejs")
 app.set("views", Path.resolve("./views"));
 
 app.use("/user", userRouter);
-ap.get("/", async () => {
+app.get("/", async (req,res) => {
     const user = req.user;
     if(!user) return res.redirect("/user/login");
     return res.send("Hello World");

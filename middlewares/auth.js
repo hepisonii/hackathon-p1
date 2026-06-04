@@ -1,4 +1,4 @@
-const {rateLimit, ipKeyGenerator} = require("express-rate-limit")
+const {rateLimit} = require("express-rate-limit")
 const { verifyToken } = require("../services/auth");
 const User = require("../models/user");
 

@@ -1,7 +1,7 @@
-const {connect} = require("mongoose")
+const mongoose = require("mongoose");
 
-function connectMongoDB (url){
-    connect(url)
+function connectMongoDB(url){
+    mongoose.connect(url)
     .then(() => {
         console.log("MongoDB connected")
     })
