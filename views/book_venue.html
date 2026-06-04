@@ -17,8 +17,6 @@
       --muted: #6b6f7c;
       --card-bg: #191c25;
       --card-border: #252837;
-      --slot-available: #3ecf6e;
-      --slot-unavailable: #e05252;
     }
 
     body {
@@ -33,24 +31,15 @@
     .blob { position: fixed; border-radius: 50%; pointer-events: none; filter: blur(80px); z-index: 0; }
     .blob-1 { width: 600px; height: 600px; top: -200px; left: 50%; transform: translateX(-50%); background: radial-gradient(circle, rgba(200,169,110,0.08), transparent 70%); }
     .blob-2 { width: 400px; height: 400px; bottom: -100px; right: -80px; background: radial-gradient(circle, rgba(80,100,200,0.07), transparent 70%); }
-    .blob-3 { width: 300px; height: 300px; top: 40%; left: -80px; background: radial-gradient(circle, rgba(200,169,110,0.05), transparent 70%); }
 
     @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
-    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
-    @keyframes spin   { to{transform:rotate(360deg)} }
 
-    /* ════════════════════════════════
-       STEP WRAPPER
-    ════════════════════════════════ */
     .step {
       position: relative; z-index: 1;
       max-width: 780px; margin: 0 auto;
       padding: 60px 24px 80px;
-      display: none;
     }
-    .step.active { display: block; }
 
-    /* ── Back link ── */
     .back-link {
       display: inline-flex; align-items: center; gap: 8px;
       color: var(--muted); font-size: 0.875rem; text-decoration: none;
@@ -59,45 +48,24 @@
     .back-link:hover { color: var(--accent); }
     .back-link svg { width: 16px; height: 16px; stroke: currentColor; }
 
-    /* ════════════════════════════════
-       STEP 1 — SPORT SELECTION
-    ════════════════════════════════ */
-    #step1 { max-width: 780px; }
-
+    /* ── Step 1 ── */
     .header { text-align: center; margin-bottom: 52px; animation: fadeUp 0.5s ease both; }
     .heading { font-family:'Playfair Display',serif; font-size:clamp(1.8rem,5vw,2.6rem); font-weight:700; line-height:1.15; margin-bottom:12px; }
     .heading em { font-style:normal; color:var(--accent); }
     .sub { font-size:0.95rem; color:var(--muted); font-weight:300; line-height:1.65; }
 
-    .sports-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-bottom: 40px;
-    }
+    .sports-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 40px; }
 
     .sport-card {
       position: relative; cursor: pointer;
       border-radius: 20px; border: 1.5px solid var(--border);
-      background: var(--panel);
-      padding: 28px 20px 24px;
+      background: var(--panel); padding: 28px 20px 24px;
       display: flex; flex-direction: column; align-items: center; gap: 14px;
-      transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease;
-      animation: fadeUp 0.5s ease both;
-      overflow: hidden; user-select: none;
+      transition: transform 0.22s ease, border-color 0.22s ease;
+      animation: fadeUp 0.5s ease both; user-select: none;
     }
-    .sport-card:nth-child(1){animation-delay:0.08s}
-    .sport-card:nth-child(2){animation-delay:0.14s}
-    .sport-card:nth-child(3){animation-delay:0.20s}
-    .sport-card:nth-child(4){animation-delay:0.26s}
-    .sport-card:nth-child(5){animation-delay:0.32s}
-
-    .sport-card::before { content:''; position:absolute; inset:0; border-radius:20px; opacity:0; transition:opacity 0.3s ease; }
-    .sport-card::after  { content:''; position:absolute; top:0; left:24px; right:24px; height:1.5px; border-radius:0 0 2px 2px; opacity:0; transition:opacity 0.3s ease; }
+    .sport-card input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
     .sport-card:hover { transform: translateY(-4px); }
-    .sport-card:hover::before, .sport-card:hover::after { opacity: 0.6; }
-    .sport-card.selected { transform: translateY(-5px); }
-    .sport-card.selected::before, .sport-card.selected::after { opacity: 1; }
 
     .s-cricket    { --c: 200,169,110; }
     .s-football   { --c: 80,200,120;  }
@@ -105,243 +73,65 @@
     .s-pickleball { --c: 100,180,240; }
     .s-badminton  { --c: 200,100,220; }
 
-    .sport-card::before { background: radial-gradient(ellipse at top center, rgba(var(--c),0.10), transparent 65%); }
-    .sport-card::after  { background: linear-gradient(90deg, transparent, rgba(var(--c),0.7), transparent); }
-    .sport-card:hover   { border-color: rgba(var(--c),0.45); }
-    .sport-card.selected { border-color: rgba(var(--c),0.75); background: rgba(var(--c),0.05); }
+    .sport-card:hover { border-color: rgba(var(--c),0.45); }
+    .sport-card.selected { border-color: rgba(var(--c),0.75); background: rgba(var(--c),0.05); transform: translateY(-5px); }
 
-    .sport-emoji {
-      font-size: 2.6rem; line-height: 1;
-      filter: drop-shadow(0 0 10px rgba(var(--c),0.25));
-      transition: filter 0.3s, transform 0.3s;
-    }
-    .sport-card:hover .sport-emoji,
-    .sport-card.selected .sport-emoji {
-      filter: drop-shadow(0 0 18px rgba(var(--c),0.55));
-      transform: scale(1.08);
-    }
-    .sport-name { font-family:'Playfair Display',serif; font-size:1.08rem; font-weight:600; color:var(--text); text-align:center; }
-    .sport-card.selected .sport-name { color: rgb(var(--c)); }
-    .sport-tag {
-      font-size:10.5px; font-weight:500; letter-spacing:0.07em; text-transform:uppercase;
-      color:rgba(var(--c),0.6); background:rgba(var(--c),0.08);
-      border:1px solid rgba(var(--c),0.18); border-radius:99px; padding:3px 10px;
-    }
+    .sport-emoji { font-size: 2.6rem; line-height: 1; filter: drop-shadow(0 0 10px rgba(var(--c),0.25)); }
+    .sport-name { font-family:'Playfair Display',serif; font-size:1.08rem; font-weight:600; color:var(--text); }
+    .sport-tag { font-size:10.5px; font-weight:500; letter-spacing:0.07em; text-transform:uppercase; color:rgba(var(--c),0.6); background:rgba(var(--c),0.08); border:1px solid rgba(var(--c),0.18); border-radius:99px; padding:3px 10px; }
 
-    .check-badge {
-      position:absolute; top:13px; right:13px;
-      width:22px; height:22px; border-radius:50%;
-      background:rgb(var(--c));
-      display:flex; align-items:center; justify-content:center;
-      opacity:0; transform:scale(0.6);
-      transition:opacity 0.22s ease, transform 0.22s cubic-bezier(0.34,1.56,0.64,1);
-    }
-    .check-badge svg { width:12px; height:12px; stroke:#0d0f14; stroke-width:2.5; }
-    .sport-card.selected .check-badge { opacity:1; transform:scale(1); }
-
-    .selected-hint {
-      text-align:center; margin-bottom:24px; min-height:22px;
-      font-size:0.875rem; color:var(--muted);
-      animation:fadeUp 0.4s ease both; transition:color 0.2s;
-    }
-    .selected-hint.active { color:var(--accent); }
-
-    .cta-wrap { display:flex; justify-content:center; animation:fadeUp 0.55s ease 0.4s both; }
+    .cta-wrap { display:flex; justify-content:center; }
     .cta-btn {
       display:inline-flex; align-items:center; gap:10px;
       padding:15px 36px; border-radius:14px;
       font-family:'DM Sans',sans-serif; font-size:0.95rem; font-weight:500;
       cursor:pointer; border:none; background:var(--accent); color:#0d0f14;
-      letter-spacing:0.02em;
-      transition:opacity 0.2s, transform 0.18s, box-shadow 0.2s;
-      box-shadow:0 4px 24px rgba(200,169,110,0.18);
-      position:relative; overflow:hidden;
+      transition:opacity 0.2s, transform 0.18s; text-decoration: none;
     }
-    .cta-btn::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,0.12),transparent 60%); }
-    .cta-btn:disabled { opacity:0.38; cursor:not-allowed; box-shadow:none; }
-    .cta-btn:not(:disabled):hover { opacity:0.88; transform:translateY(-2px); box-shadow:0 8px 32px rgba(200,169,110,0.28); }
-    .cta-btn:not(:disabled):active { transform:scale(0.97); }
-    .cta-btn svg { width:17px; height:17px; stroke:#0d0f14; stroke-width:2.2; flex-shrink:0; }
+    .cta-btn:hover { opacity:0.88; transform:translateY(-2px); }
+    .cta-btn svg { width:17px; height:17px; stroke:#0d0f14; stroke-width:2.2; }
 
-    /* ════════════════════════════════
-       STEP 2 — VENUES
-    ════════════════════════════════ */
+    /* ── Step 2 ── */
     #step2 { max-width: 900px; }
+    .sport-pill { display:inline-flex; align-items:center; gap:8px; padding:5px 16px; border-radius:99px; border:1px solid rgba(200,169,110,0.3); background:rgba(200,169,110,0.08); font-size:12px; font-weight:500; color:var(--accent); text-transform:uppercase; margin-bottom:16px; }
+    .venues-heading { font-family:'Playfair Display',serif; font-size:clamp(1.7rem,4.5vw,2.4rem); font-weight:700; margin-bottom:8px; }
+    .venues-sub { font-size:0.9rem; color:var(--muted); }
+    .venues-header { margin-bottom:40px; }
 
-    .sport-pill {
-      display:inline-flex; align-items:center; gap:8px;
-      padding:5px 16px; border-radius:99px;
-      border:1px solid rgba(200,169,110,0.3);
-      background:rgba(200,169,110,0.08);
-      font-size:12px; font-weight:500;
-      color:var(--accent); letter-spacing:0.06em;
-      text-transform:uppercase; margin-bottom:16px;
-    }
-    .venues-heading { font-family:'Playfair Display',serif; font-size:clamp(1.7rem,4.5vw,2.4rem); font-weight:700; line-height:1.18; margin-bottom:8px; }
-    .venues-heading em { font-style:normal; color:var(--accent); }
-    .venues-sub { font-size:0.9rem; color:var(--muted); font-weight:300; }
-    .venues-header { margin-bottom:40px; animation:fadeUp 0.5s ease both; }
-
-    /* Date bar */
-    .datebar {
-      display:flex; align-items:flex-end; gap:14px;
-      background:var(--panel); border:1px solid var(--border);
-      border-radius:18px; padding:22px 26px; margin-bottom:44px;
-      animation:fadeUp 0.5s ease 0.1s both;
-    }
+    .datebar { display:flex; align-items:flex-end; gap:14px; background:var(--panel); border:1px solid var(--border); border-radius:18px; padding:22px 26px; margin-bottom:44px; }
     .datebar-label { font-size:11px; font-weight:500; color:var(--muted); letter-spacing:0.07em; text-transform:uppercase; margin-bottom:8px; }
     .date-field { flex:1; display:flex; flex-direction:column; }
-    .date-input {
-      background:var(--card-bg); border:1px solid var(--card-border);
-      border-radius:11px; padding:11px 16px;
-      color:var(--text); font-family:'DM Sans',sans-serif;
-      font-size:0.93rem; outline:none; transition:border-color 0.2s; color-scheme:dark;
-    }
-    .date-input:focus { border-color:rgba(200,169,110,0.5); }
+    .date-input { background:var(--card-bg); border:1px solid var(--card-border); border-radius:11px; padding:11px 16px; color:var(--text); font-family:'DM Sans',sans-serif; outline:none; color-scheme:dark; }
 
-    .search-btn {
-      display:inline-flex; align-items:center; gap:9px;
-      padding:12px 26px; border-radius:11px;
-      background:var(--accent); color:#0d0f14;
-      font-family:'DM Sans',sans-serif; font-size:0.9rem; font-weight:500;
-      border:none; cursor:pointer;
-      transition:opacity 0.18s, transform 0.15s;
-      white-space:nowrap; flex-shrink:0; letter-spacing:0.02em;
-    }
-    .search-btn:hover { opacity:0.85; transform:translateY(-1px); }
-    .search-btn:active { transform:scale(0.97); }
-    .search-btn svg { width:15px; height:15px; stroke:#0d0f14; stroke-width:2.2; }
-    .search-btn.loading { opacity:0.6; pointer-events:none; }
+    .search-btn { display:inline-flex; align-items:center; gap:9px; padding:12px 26px; border-radius:11px; background:var(--accent); color:#0d0f14; font-weight:500; border:none; cursor:pointer; }
 
-    /* Venue cards */
-    #venuesList { display:flex; flex-direction:column; gap:28px; }
-
-    .venue-card {
-      background:var(--panel); border:1px solid var(--border);
-      border-radius:22px; overflow:hidden;
-      animation:fadeUp 0.45s ease both;
-    }
-    .venue-card:nth-child(1){animation-delay:0.05s}
-    .venue-card:nth-child(2){animation-delay:0.12s}
-    .venue-card:nth-child(3){animation-delay:0.19s}
-
-    .venue-top {
-      display:flex; align-items:center; gap:20px;
-      padding:22px 24px 20px; border-bottom:1px solid var(--border);
-    }
-    .venue-img-placeholder {
-      width:88px; height:72px; border-radius:13px;
-      background:var(--card-bg); border:1px solid var(--card-border);
-      flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:1.8rem;
-    }
+    /* Venues List Elements */
+    #venuesList { display:flex; flex-direction:column; gap:20px; }
+    .venue-card { background:var(--panel); border:1px solid var(--border); border-radius:22px; overflow:hidden; transition: transform 0.2s ease; }
+    .venue-card:hover { transform: translateY(-2px); }
+    .venue-top { display:flex; align-items:center; gap:20px; padding:24px; }
+    .venue-img-placeholder { width:88px; height:72px; border-radius:13px; background:var(--card-bg); border:1px solid var(--card-border); display:flex; align-items:center; justify-content:center; font-size:1.8rem; }
     .venue-info { flex:1; min-width:0; }
-    .venue-name { font-family:'Playfair Display',serif; font-size:1.15rem; font-weight:600; color:var(--text); margin-bottom:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .venue-meta { display:flex; flex-wrap:wrap; gap:12px; font-size:0.825rem; color:var(--muted); }
-    .venue-meta span { display:flex; align-items:center; gap:5px; }
-    .venue-meta svg { width:13px; height:13px; stroke:var(--muted); }
+    .venue-name { font-family:'Playfair Display',serif; font-size:1.3rem; font-weight:600; margin-bottom:6px; color: var(--text); }
+    .venue-meta { display:flex; flex-direction: column; gap: 6px; font-size:0.9rem; }
+    .venue-address-text { color: var(--text); display: flex; align-items: center; gap: 4px; }
+    .venue-host-text { color: var(--muted); font-size: 0.825rem; }
+    .venue-host-text strong { color: var(--accent); font-weight: 500; }
 
-    .timing-btn {
-      display:inline-flex; align-items:center; gap:8px;
-      padding:9px 18px; border-radius:10px;
-      border:1px solid var(--card-border); background:var(--card-bg);
-      color:var(--accent); font-family:'DM Sans',sans-serif;
-      font-size:0.845rem; font-weight:500;
-      cursor:pointer; transition:border-color 0.18s, background 0.18s; flex-shrink:0;
+    .view-slots-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 12px 24px; background: var(--accent); color: #0d0f14;
+      font-family: 'DM Sans', sans-serif; font-size: 0.875rem; font-weight: 600;
+      border-radius: 11px; text-decoration: none; white-space: nowrap;
+      transition: opacity 0.15s, transform 0.15s;
     }
-    .timing-btn:hover { border-color:rgba(200,169,110,0.4); background:rgba(200,169,110,0.06); }
-    .timing-btn svg { width:14px; height:14px; stroke:var(--accent); transition:transform 0.25s ease; }
-    .timing-btn.open svg { transform:rotate(180deg); }
-
-    .slots-panel { max-height:0; overflow:hidden; transition:max-height 0.38s cubic-bezier(0.4,0,0.2,1), padding 0.3s ease; }
-    .slots-panel.open { max-height:480px; }
-    .slots-inner { padding:22px 24px 24px; }
-
-    .slots-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
-    .slots-title { font-size:0.82rem; font-weight:500; color:var(--muted); letter-spacing:0.06em; text-transform:uppercase; }
-    .slots-legend { display:flex; gap:14px; }
-    .legend-dot { display:flex; align-items:center; gap:6px; font-size:0.78rem; color:var(--muted); }
-    .legend-dot::before { content:''; width:8px; height:8px; border-radius:50%; border:1.5px solid currentColor; }
-    .legend-available { color:var(--slot-available); }
-    .legend-taken     { color:var(--slot-unavailable); }
-
-    .slots-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:9px; }
-
-    .slot {
-      border-radius:10px; border:1.5px solid;
-      padding:10px 6px; display:flex; flex-direction:column; align-items:center; gap:4px;
-      cursor:pointer; transition:transform 0.18s, background 0.18s, box-shadow 0.18s;
-      position:relative; user-select:none;
-    }
-    .slot.available { border-color:rgba(62,207,110,0.4); background:rgba(62,207,110,0.05); }
-    .slot.available:hover { border-color:rgba(62,207,110,0.75); background:rgba(62,207,110,0.10); transform:translateY(-2px); box-shadow:0 4px 16px rgba(62,207,110,0.12); }
-    .slot.unavailable { border-color:rgba(224,82,82,0.3); background:rgba(224,82,82,0.04); cursor:not-allowed; opacity:0.7; }
-    .slot.selected { border-color:var(--accent) !important; background:rgba(200,169,110,0.12) !important; box-shadow:0 0 0 2px rgba(200,169,110,0.25); }
-    .slot-time { font-size:0.76rem; font-weight:500; color:var(--text); text-align:center; line-height:1.2; }
-    .slot-status { font-size:0.65rem; letter-spacing:0.04em; text-transform:uppercase; }
-    .slot.available   .slot-status { color:var(--slot-available); }
-    .slot.unavailable .slot-status { color:var(--slot-unavailable); }
-    .slot.selected    .slot-status { color:var(--accent); }
-
-    .book-strip {
-      display:flex; align-items:center; justify-content:space-between; gap:16px;
-      background:rgba(200,169,110,0.07); border-top:1px solid rgba(200,169,110,0.18);
-      padding:16px 24px; max-height:0; overflow:hidden;
-      transition:max-height 0.3s ease, padding 0.3s ease;
-    }
-    .book-strip.visible { max-height:80px; }
-    .book-strip-info { font-size:0.88rem; color:var(--text); }
-    .book-strip-info strong { color:var(--accent); }
-    .book-now-btn {
-      display:inline-flex; align-items:center; gap:8px;
-      padding:11px 24px; border-radius:11px;
-      background:var(--accent); color:#0d0f14;
-      font-family:'DM Sans',sans-serif; font-size:0.88rem; font-weight:500;
-      border:none; cursor:pointer; transition:opacity 0.18s, transform 0.15s;
-      white-space:nowrap; flex-shrink:0;
-    }
-    .book-now-btn:hover { opacity:0.85; transform:translateY(-1px); }
-    .book-now-btn svg { width:14px; height:14px; stroke:#0d0f14; stroke-width:2.2; }
-
-    .empty-state { text-align:center; padding:64px 24px; color:var(--muted); font-size:0.92rem; display:none; }
-    .empty-state .big { font-size:3rem; margin-bottom:16px; }
-
-    /* ── Confirmation overlay ── */
-    .confirm-overlay {
-      position: fixed; inset: 0; z-index: 100;
-      background: rgba(13,15,20,0.85); backdrop-filter: blur(8px);
-      display: flex; align-items: center; justify-content: center;
-      opacity: 0; pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-    .confirm-overlay.show { opacity: 1; pointer-events: all; }
-    .confirm-box {
-      background: var(--panel); border: 1px solid rgba(200,169,110,0.3);
-      border-radius: 24px; padding: 44px 40px;
-      max-width: 420px; width: 90%;
-      text-align: center;
-      transform: translateY(24px) scale(0.96);
-      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
-    }
-    .confirm-overlay.show .confirm-box { transform: translateY(0) scale(1); }
-    .confirm-icon { font-size: 3rem; margin-bottom: 18px; }
-    .confirm-title { font-family:'Playfair Display',serif; font-size:1.5rem; margin-bottom:10px; color:var(--accent); }
-    .confirm-detail { font-size:0.88rem; color:var(--muted); line-height:1.75; margin-bottom:28px; }
-    .confirm-detail strong { color:var(--text); }
-    .confirm-close {
-      padding:12px 32px; border-radius:12px; border:none;
-      background:var(--accent); color:#0d0f14;
-      font-family:'DM Sans',sans-serif; font-size:0.9rem; font-weight:500;
-      cursor:pointer; transition:opacity 0.18s;
-    }
-    .confirm-close:hover { opacity:0.85; }
+    .view-slots-btn:hover { opacity: 0.88; }
+    .view-slots-btn svg { width: 15px; height: 15px; stroke: #0d0f14; stroke-width: 2.5; }
 
     @media (max-width: 600px) {
       .sports-grid { grid-template-columns: repeat(2,1fr); }
-      .slots-grid { grid-template-columns: repeat(3,1fr); }
-      .venue-top, .datebar { flex-wrap: wrap; }
-    }
-    @media (max-width: 380px) {
-      .sports-grid { grid-template-columns: 1fr; }
+      .venue-top { flex-direction: column; align-items: flex-start; gap: 16px; }
+      .view-slots-btn { width: 100%; justify-content: center; }
     }
   </style>
 </head>
@@ -349,352 +139,176 @@
 
   <div class="blob blob-1"></div>
   <div class="blob blob-2"></div>
-  <div class="blob blob-3"></div>
 
-  <!-- ══════════════════════════════
+  <!-- ════════════════════════════════════════════════════════════════════════
        STEP 1 — SPORT SELECTION
-  ══════════════════════════════ -->
-  <div class="step active" id="step1">
-
+       =========================================================================
+       BACKEND DEV NOTE: If your routing configuration does not have a 
+       'sport' parameter in the URL request yet, render this block.
+       ════════════════════════════════════════════════════════════════════════ -->
+  <div class="step" id="step1">
     <header class="header">
       <h1 class="heading">Pick your <em>sport</em></h1>
       <p class="sub">What do you want to play? We'll find it for you.</p>
     </header>
 
-    <div class="sports-grid">
+    <!-- Submits form selections instantly back to the parent URL router path -->
+    <form action="" method="GET">
+      <div class="sports-grid">
+        <label class="sport-card s-cricket" onclick="highlightSport(this)">
+          <input type="radio" name="sport" value="cricket" required />
+          <div class="sport-emoji">🏏</div>
+          <div class="sport-name">Cricket</div>
+          <div class="sport-tag">Bat &amp; ball</div>
+        </label>
 
-      <div class="sport-card s-cricket" data-sport="cricket" onclick="selectSport(this)">
-        <div class="check-badge"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-        <div class="sport-emoji">🏏</div>
-        <div class="sport-name">Cricket</div>
-        <div class="sport-tag">Bat &amp; ball</div>
+        <label class="sport-card s-football" onclick="highlightSport(this)">
+          <input type="radio" name="sport" value="football" />
+          <div class="sport-emoji">⚽</div>
+          <div class="sport-name">Football</div>
+          <div class="sport-tag">Team sport</div>
+        </label>
+
+        <label class="sport-card s-basketball" onclick="highlightSport(this)">
+          <input type="radio" name="sport" value="basketball" />
+          <div class="sport-emoji">🏀</div>
+          <div class="sport-name">Basketball</div>
+          <div class="sport-tag">Court game</div>
+        </label>
+
+        <label class="sport-card s-pickleball" onclick="highlightSport(this)">
+          <input type="radio" name="sport" value="pickleball" />
+          <div class="sport-emoji">🏓</div>
+          <div class="sport-name">Pickleball</div>
+          <div class="sport-tag">Racquet sport</div>
+        </label>
+
+        <label class="sport-card s-badminton" onclick="highlightSport(this)">
+          <input type="radio" name="sport" value="badminton" />
+          <div class="sport-emoji">🏸</div>
+          <div class="sport-name">Badminton</div>
+          <div class="sport-tag">Shuttle sport</div>
+        </label>
       </div>
 
-      <div class="sport-card s-football" data-sport="football" onclick="selectSport(this)">
-        <div class="check-badge"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-        <div class="sport-emoji">⚽</div>
-        <div class="sport-name">Football</div>
-        <div class="sport-tag">Team sport</div>
+      <div class="cta-wrap">
+        <button type="submit" class="cta-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          Find venues
+        </button>
       </div>
-
-      <div class="sport-card s-basketball" data-sport="basketball" onclick="selectSport(this)">
-        <div class="check-badge"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-        <div class="sport-emoji">🏀</div>
-        <div class="sport-name">Basketball</div>
-        <div class="sport-tag">Court game</div>
-      </div>
-
-      <div class="sport-card s-pickleball" data-sport="pickleball" onclick="selectSport(this)">
-        <div class="check-badge"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-        <div class="sport-emoji">🏓</div>
-        <div class="sport-name">Pickleball</div>
-        <div class="sport-tag">Racquet sport</div>
-      </div>
-
-      <div class="sport-card s-badminton" data-sport="badminton" onclick="selectSport(this)">
-        <div class="check-badge"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-        <div class="sport-emoji">🏸</div>
-        <div class="sport-name">Badminton</div>
-        <div class="sport-tag">Shuttle sport</div>
-      </div>
-
-    </div>
-
-    <p class="selected-hint" id="selectedHint">Select a sport to continue</p>
-
-    <div class="cta-wrap">
-      <button class="cta-btn" id="ctaBtn" disabled onclick="goToVenues()">
-        <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-        </svg>
-        Find venues
-      </button>
-    </div>
+    </form>
   </div>
 
-  <!-- ══════════════════════════════
-       STEP 2 — VENUES & BOOKING
-  ══════════════════════════════ -->
-  <div class="step" id="step2">
 
-    <button class="back-link" onclick="goBack()">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
-      </svg>
+  <!-- ════════════════════════════════════════════════════════════════════════
+       STEP 2 — VENUE OVERVIEW LISTING
+       =========================================================================
+       BACKEND DEV NOTE: If your router path catches 'sport' as a parameter,
+       hide Step 1, make this container block visible, and render your loop logic.
+       ════════════════════════════════════════════════════════════════════════ -->
+  <div class="step" id="step2" style="display: none;">
+    
+    <!-- Resets url tracking states back to defaults -->
+    <a href="?" class="back-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
       Change sport
-    </button>
+    </a>
 
     <header class="venues-header">
+      <!-- Dynamic text replacement container for target labels -->
       <div class="sport-pill" id="sportPill">🏏 Cricket</div>
       <h1 class="venues-heading">Find a <em>venue</em> near you</h1>
       <p class="venues-sub">Pick a date and we'll show what's available.</p>
     </header>
 
-    <div class="datebar">
-      <div class="date-field">
-        <div class="datebar-label">Select date</div>
-        <input type="date" class="date-input" id="dateInput" />
+    <form action="" method="GET">
+      <!-- Hidden tag retains active context during form submission cycles -->
+      <input type="hidden" name="sport" value="cricket" id="hiddenSportInput" />
+
+      <div class="datebar">
+        <div class="date-field">
+          <div class="datebar-label">Select date</div>
+          <!-- Automatically auto-submits parent form fields on interactive changes -->
+          <input type="date" class="date-input" name="date" id="dateInput" required onchange="this.form.submit()" />
+        </div>
+        <button type="submit" class="search-btn">Search</button>
       </div>
-      <button class="search-btn" id="searchBtn" onclick="searchVenues()">
-        <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-        Search
-      </button>
-    </div>
+    </form>
 
-    <div id="venuesList"></div>
-    <div class="empty-state" id="emptyState">
-      <div class="big">🏟️</div>
-      No venues found for this date. Try a different day.
-    </div>
+    <!-- 
+      =========================================================================
+      BACKEND PROCESSING HOOK:
+      Iterate through your server response collection retrieved from:
+      `/booking/api?sport=${selectedSport}`
+      =========================================================================
+    -->
+    <div id="venuesList">
 
-  </div>
+      <!-- START BACKEND FOREACH/MAP LOOP PREVIEW TEMPLATE -->
+      <div class="venue-card">
+        <div class="venue-top">
+          <div class="venue-img-placeholder">🏟️</div>
+          
+          <div class="venue-info">
+            <!-- Matches Key: venue_name -->
+            <div class="venue-name">CM BOX CRICKET</div>
+            
+            <div class="venue-meta">
+              <!-- Matches Key: venue_address -->
+              <span class="venue-address-text">📍 Chenpur underpass, ahmedabad</span>
+              <!-- Matches Key: fullname -->
+              <span class="venue-host-text">👤 Hosted by: <strong>Hepi Soni</strong></span>
+            </div>
+          </div>
+          
+          <!-- 
+            ACTION BUTTON: 
+            Passes the database Object '_id' string via link query strings 
+            down into your separate detailed slot viewer routing system page.
+          -->
+          <a href="/booking/details?id=6a2155d98db0df9c7a0616bf&date=2026-06-04&sport=cricket" class="view-slots-btn">
+            View Slots
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
+      </div>
+      <!-- END BACKEND FOREACH/MAP LOOP PREVIEW TEMPLATE -->
 
-  <!-- ══════════════════════════════
-       BOOKING CONFIRMATION
-  ══════════════════════════════ -->
-  <div class="confirm-overlay" id="confirmOverlay">
-    <div class="confirm-box">
-      <div class="confirm-icon">🎉</div>
-      <div class="confirm-title">Booking Confirmed!</div>
-      <div class="confirm-detail" id="confirmDetail"></div>
-      <button class="confirm-close" onclick="closeConfirm()">Done</button>
     </div>
   </div>
 
   <script>
-    /* ── State ── */
-    let selectedSport = '';
-    let selectedSlots = {};
-
-    const sportEmoji = { cricket:'🏏', football:'⚽', basketball:'🏀', pickleball:'🏓', badminton:'🏸' };
-    const sportLabel = { cricket:'Cricket', football:'Football', basketball:'Basketball', pickleball:'Pickleball', badminton:'Badminton' };
-    const sportHints = {
-      cricket:    "Cricket selected — let's find you a pitch 🏏",
-      football:   "Football selected — time to hit the turf ⚽",
-      basketball: "Basketball selected — court is calling 🏀",
-      pickleball: "Pickleball selected — great choice! 🏓",
-      badminton:  "Badminton selected — shuttle up 🏸",
-    };
-
-    /* ── Step 1: sport selection ── */
-    function selectSport(card) {
+    // Visual management tracking for radio choices
+    function highlightSport(element) {
       document.querySelectorAll('.sport-card').forEach(c => c.classList.remove('selected'));
-      card.classList.add('selected');
-      selectedSport = card.dataset.sport;
-
-      const hint = document.getElementById('selectedHint');
-      hint.textContent = sportHints[selectedSport];
-      hint.classList.add('active');
-      document.getElementById('ctaBtn').disabled = false;
+      element.classList.add('selected');
     }
 
-    function goToVenues() {
-      if (!selectedSport) return;
-      document.getElementById('step1').classList.remove('active');
-      const s2 = document.getElementById('step2');
-      s2.classList.add('active');
-      document.getElementById('sportPill').textContent = `${sportEmoji[selectedSport]} ${sportLabel[selectedSport]}`;
-
-      // Set min date
+    // Interactive fallback parsing simulation to preview dynamic routes locally.
+    // Safe to drop completely once your application is wireframe integrated.
+    window.addEventListener('DOMContentLoaded', () => {
       const today = new Date().toISOString().split('T')[0];
       const di = document.getElementById('dateInput');
-      di.min = today;
-      di.value = today;
-
-      selectedSlots = {};
-      searchVenues();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function goBack() {
-      document.getElementById('step2').classList.remove('active');
-      document.getElementById('step1').classList.add('active');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    /* ── Mock data ── */
-    const VENUE_DATA = {
-      cricket:    [
-        { id:'v1', name:'Green Field Arena',      emoji:'🏟️', location:'Adajan, Surat',  distance:'1.2 km', price:'₹600/hr' },
-        { id:'v2', name:'City Sports Complex',    emoji:'🏢', location:'Vesu, Surat',    distance:'3.4 km', price:'₹800/hr' },
-        { id:'v3', name:"Champions Court",        emoji:'🏆', location:'Pal, Surat',     distance:'5.1 km', price:'₹500/hr' },
-      ],
-      football:   [
-        { id:'f1', name:'Turf One',               emoji:'⚽', location:'Athwa, Surat',   distance:'0.8 km', price:'₹700/hr' },
-        { id:'f2', name:'Goal Zone Arena',        emoji:'🏟️', location:'Katargam, Surat',distance:'2.1 km', price:'₹550/hr' },
-      ],
-      basketball: [
-        { id:'b1', name:'Slam Dunk Courts',       emoji:'🏀', location:'Citylight, Surat',distance:'1.5 km', price:'₹400/hr' },
-        { id:'b2', name:'Hoop Central',           emoji:'🏢', location:'Piplod, Surat',   distance:'3.0 km', price:'₹450/hr' },
-      ],
-      pickleball: [
-        { id:'p1', name:'Pickle Palace',          emoji:'🏓', location:'Vesu, Surat',     distance:'2.8 km', price:'₹350/hr' },
-      ],
-      badminton:  [
-        { id:'ba1', name:'Shuttle Hub',           emoji:'🏸', location:'Althan, Surat',   distance:'1.9 km', price:'₹300/hr' },
-        { id:'ba2', name:'Feather Court',         emoji:'🏢', location:'Adajan, Surat',   distance:'0.6 km', price:'₹350/hr' },
-      ],
-    };
-
-    function generateSlots(venueId) {
-      return Array.from({ length: 18 }, (_, i) => {
-        const h  = 6 + i;
-        const hh = String(h).padStart(2,'0');
-        const eh = String(h + 1).padStart(2,'0');
-        return { id:`${venueId}-slot-${i}`, time:`${hh}:00 – ${eh}:00`, available: Math.random() > 0.35 };
-      });
-    }
-
-    /* ── Search / render ── */
-    async function searchVenues() {
-      const btn = document.getElementById('searchBtn');
-      btn.classList.add('loading');
-      btn.innerHTML = 'Searching…';
-
-      await new Promise(r => setTimeout(r, 600));
-
-      const res = await fetch(`/booking/api?sport=${selectedSport}`);
-      const venues = await res.json();
-      renderVenues(venues);
-
-      btn.classList.remove('loading');
-      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;stroke:#0d0f14;stroke-width:2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Search`;
-    }
-
-    function renderVenues(venues) {
-      const list  = document.getElementById('venuesList');
-      const empty = document.getElementById('emptyState');
-      list.innerHTML = '';
-      selectedSlots = {};
-
-      if (!venues || venues.length === 0) { empty.style.display = 'block'; return; }
-      empty.style.display = 'none';
-
-      venues.forEach((v, idx) => {
-        const card = document.createElement('div');
-        card.className = 'venue-card';
-        card.style.animationDelay = `${idx * 0.07}s`;
-        card.dataset.venueId = v.id;
-
-        const slotsHtml = v.slots.map(slot => `
-          <div class="slot ${slot.available ? 'available' : 'unavailable'}"
-               data-slot-id="${slot.id}" data-venue-id="${v.id}"
-               data-time="${slot.time}" data-available="${slot.available}"
-               onclick="selectSlot(this)">
-            <div class="slot-time">${slot.time.replace(' – ','<br>')}</div>
-            <div class="slot-status">${slot.available ? 'Open' : 'Taken'}</div>
-          </div>`).join('');
-
-        card.innerHTML = `
-          <div class="venue-top">
-            <div class="venue-img-placeholder">${v.emoji || '🏟️'}</div>
-            <div class="venue-info">
-              <div class="venue-name">${v.name}</div>
-              <div class="venue-meta">
-                <span><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>${v.location}</span>
-                <span><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${v.distance}</span>
-                <span><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>${v.price}</span>
-              </div>
-            </div>
-            <button class="timing-btn" onclick="toggleSlots('${v.id}', this)">
-              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              See timings
-            </button>
-          </div>
-          <div class="slots-panel" id="slots-${v.id}">
-            <div class="slots-inner">
-              <div class="slots-header">
-                <span class="slots-title">18 time slots</span>
-                <div class="slots-legend">
-                  <span class="legend-dot legend-available">Available</span>
-                  <span class="legend-dot legend-taken">Taken</span>
-                </div>
-              </div>
-              <div class="slots-grid">${slotsHtml}</div>
-            </div>
-          </div>
-          <div class="book-strip" id="strip-${v.id}">
-            <div class="book-strip-info">
-              Selected: <strong id="strip-time-${v.id}">–</strong>
-            </div>
-            <button class="book-now-btn" onclick="bookSlot('${v.id}', '${v.name}')">
-              <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Book now
-            </button>
-          </div>`;
-
-        list.appendChild(card);
-      });
-    }
-
-    function toggleSlots(venueId, btn) {
-      const panel = document.getElementById(`slots-${venueId}`);
-      const open  = panel.classList.toggle('open');
-      btn.classList.toggle('open', open);
-      // Update label text node
-      btn.childNodes.forEach(n => { if (n.nodeType === 3) n.textContent = open ? ' Hide timings' : ' See timings'; });
-    }
-
-    async function selectSlot(el) {
-      if (el.dataset.available !== 'true') return;
-      const venueId = el.dataset.venueId;
-      const slotId  = el.dataset.slotId;
-      const time    = el.dataset.time;
-
-      document.querySelectorAll(`.slot[data-venue-id="${venueId}"]`).forEach(s => s.classList.remove('selected'));
-
-      if (selectedSlots[venueId] === slotId) {
-        delete selectedSlots[venueId];
-        document.getElementById(`strip-${venueId}`).classList.remove('visible');
-        return;
-      }
-      try {
-        const res = await fetch('/booking/api', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ sport: hidden.value }),
-        });
-
-        if (res.ok) {
-          // Redirect to the main booking page returned by backend
-          const data = await res.json();
-          window.location.href = data.redirect || '/venue';
-        } else {
-          // Fallback: just navigate forward
-          window.location.href = `venues.html?sport=${hidden.value}`;
-        }
-      } catch (err) {
-        // No backend yet — navigate to next step with sport param
-        window.location.href = `venues.html?sport=${hidden.value}`;
+      if (di && !di.value) {
+        di.min = today;
+        di.value = today;
       }
 
-      el.classList.add('selected');
-      selectedSlots[venueId] = slotId;
-      document.getElementById(`strip-time-${venueId}`).textContent = time;
-      document.getElementById(`strip-${venueId}`).classList.add('visible');
-    }
-
-    function bookSlot(venueId, venueName) {
-      const slotId = selectedSlots[venueId];
-      if (!slotId) return;
-      const date = document.getElementById('dateInput').value;
-      const time = document.getElementById(`strip-time-${venueId}`).textContent;
-      const sport = sportLabel[selectedSport] || selectedSport;
-
-      document.getElementById('confirmDetail').innerHTML =
-        `<strong>${sport}</strong> at <strong>${venueName}</strong><br>
-         Date: <strong>${date}</strong><br>
-         Time: <strong>${time}</strong>`;
-
-      document.getElementById('confirmOverlay').classList.add('show');
-    }
-
-    function closeConfirm() {
-      document.getElementById('confirmOverlay').classList.remove('show');
-    }
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('sport')) {
+        document.getElementById('step1').style.display = 'none';
+        document.getElementById('step2').style.display = 'block';
+        
+        const sportVal = urlParams.get('sport');
+        document.getElementById('hiddenSportInput').value = sportVal;
+        
+        // Match chosen parameters up with active navigation indicator metrics
+        const emojiMap = { cricket:'🏏', football:'⚽', basketball:'🏀', pickleball:'🏓', badminton:'🏸' };
+        const label = sportVal.charAt(0).toUpperCase() + sportVal.slice(1);
+        document.getElementById('sportPill').textContent = `${emojiMap[sportVal] || '🏟️'} ${label}`;
+      }
+    });
   </script>
-
 </body>
 </html>
