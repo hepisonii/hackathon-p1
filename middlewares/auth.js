@@ -38,6 +38,14 @@ const limiter = rateLimit({
     legacyHeaders: false,
 })
 
+function checkRole(role=[]){
+    return (req,res,next) => {
+        const user = req.user;
+        if(role.includes(user.role)) return true;
+    }
+    return res.send("Participants are unauthorized to access this route!");
+}
+
 module.exports = {
     checkAuth,
     limiter,

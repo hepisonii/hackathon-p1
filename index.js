@@ -15,14 +15,27 @@ app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(checkAuth());
 
+app.set(Path.resolve(__dirname, "./views"));
 app.set("view engine","ejs")
 app.set("views", Path.resolve("./views"));
 
 app.use("/user", userRouter);
 app.get("/", async (req,res) => {
     const user = req.user;
-    if(!user) return res.redirect("/user/login");
-    return res.send("Hello World");
+    if(!user)
+        return res.redirect("/user/login");
+    else if(user.role === "venue-owner")
+        return res.sendFile("/home-venue-owner.html");
+    else
+        return res.sendFile("/home-participant.html");
+});
+
+app.get("/about", (req,res) => {
+    return res.sendFile(Path.resolve(__dirname, "./views/about_us.html"));
+})
+
+app.post("/about", (req,res) => {
+    return res.redirect("/");
 })
 
 app.listen(PORT, () => {

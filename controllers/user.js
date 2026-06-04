@@ -71,7 +71,7 @@ async function handlePostUserLogin(req,res){
         secure: false,
         sameSite: "lax",
     });
-    return res.redirect("/");
+    return res.redirect("/about");
     }
 }
 
