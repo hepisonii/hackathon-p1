@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Book a Session — SportSpot</title>
+  <title>SportSpot — Book a Venue</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -17,6 +17,8 @@
       --muted: #6b6f7c;
       --card-bg: #191c25;
       --card-border: #252837;
+      --slot-available: #3ecf6e;
+      --slot-unavailable: #e05252;
     }
 
     body {
@@ -25,77 +27,48 @@
       font-family: 'DM Sans', sans-serif;
       color: var(--text);
       overflow-x: hidden;
-      position: relative;
     }
 
+    /* ── Blobs ── */
     .blob { position: fixed; border-radius: 50%; pointer-events: none; filter: blur(80px); z-index: 0; }
     .blob-1 { width: 600px; height: 600px; top: -200px; left: 50%; transform: translateX(-50%); background: radial-gradient(circle, rgba(200,169,110,0.08), transparent 70%); }
     .blob-2 { width: 400px; height: 400px; bottom: -100px; right: -80px; background: radial-gradient(circle, rgba(80,100,200,0.07), transparent 70%); }
     .blob-3 { width: 300px; height: 300px; top: 40%; left: -80px; background: radial-gradient(circle, rgba(200,169,110,0.05), transparent 70%); }
 
-    .page {
-      position: relative;
-      z-index: 1;
-      max-width: 780px;
-      margin: 0 auto;
-      padding: 60px 24px 80px;
-    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+    @keyframes spin   { to{transform:rotate(360deg)} }
 
-    /* Back link */
+    /* ════════════════════════════════
+       STEP WRAPPER
+    ════════════════════════════════ */
+    .step {
+      position: relative; z-index: 1;
+      max-width: 780px; margin: 0 auto;
+      padding: 60px 24px 80px;
+      display: none;
+    }
+    .step.active { display: block; }
+
+    /* ── Back link ── */
     .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--muted);
-      font-size: 0.875rem;
-      text-decoration: none;
-      margin-bottom: 48px;
-      transition: color 0.18s;
+      display: inline-flex; align-items: center; gap: 8px;
+      color: var(--muted); font-size: 0.875rem; text-decoration: none;
+      margin-bottom: 44px; transition: color 0.18s; cursor: pointer; border: none; background: none;
     }
     .back-link:hover { color: var(--accent); }
     .back-link svg { width: 16px; height: 16px; stroke: currentColor; }
 
-    /* Header */
-    .header {
-      text-align: center;
-      margin-bottom: 56px;
-      animation: fadeUp 0.5s ease both;
-    }
-    .header-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 18px;
-      border-radius: 99px;
-      border: 1px solid rgba(200,169,110,0.3);
-      background: rgba(200,169,110,0.08);
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--accent);
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      margin-bottom: 20px;
-    }
-    .step-indicator {
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-    }
-    .step-indicator span { color: var(--accent); }
+    /* ════════════════════════════════
+       STEP 1 — SPORT SELECTION
+    ════════════════════════════════ */
+    #step1 { max-width: 780px; }
 
-    .heading {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(1.8rem, 5vw, 2.6rem);
-      font-weight: 700;
-      line-height: 1.15;
-      margin-bottom: 12px;
-    }
-    .heading em { font-style: normal; color: var(--accent); }
-    .sub { font-size: 0.95rem; color: var(--muted); font-weight: 300; line-height: 1.65; }
+    .header { text-align: center; margin-bottom: 52px; animation: fadeUp 0.5s ease both; }
+    .heading { font-family:'Playfair Display',serif; font-size:clamp(1.8rem,5vw,2.6rem); font-weight:700; line-height:1.15; margin-bottom:12px; }
+    .heading em { font-style:normal; color:var(--accent); }
+    .sub { font-size:0.95rem; color:var(--muted); font-weight:300; line-height:1.65; }
 
-    @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
-
-    /* Sports grid */
     .sports-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -104,20 +77,14 @@
     }
 
     .sport-card {
-      position: relative;
-      cursor: pointer;
-      border-radius: 20px;
-      border: 1.5px solid var(--border);
+      position: relative; cursor: pointer;
+      border-radius: 20px; border: 1.5px solid var(--border);
       background: var(--panel);
       padding: 28px 20px 24px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 14px;
+      display: flex; flex-direction: column; align-items: center; gap: 14px;
       transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease;
       animation: fadeUp 0.5s ease both;
-      overflow: hidden;
-      user-select: none;
+      overflow: hidden; user-select: none;
     }
     .sport-card:nth-child(1){animation-delay:0.08s}
     .sport-card:nth-child(2){animation-delay:0.14s}
@@ -125,34 +92,18 @@
     .sport-card:nth-child(4){animation-delay:0.26s}
     .sport-card:nth-child(5){animation-delay:0.32s}
 
-    .sport-card::before {
-      content:''; position:absolute; inset:0;
-      border-radius:20px; opacity:0; transition:opacity 0.3s ease;
-    }
-
-    /* Hidden radio */
-    .sport-card input[type="radio"] {
-      position: absolute; opacity: 0; width: 0; height: 0;
-    }
-
-    /* Glow shimmer on top edge */
-    .sport-card::after {
-      content:''; position:absolute; top:0; left:24px; right:24px;
-      height:1.5px; border-radius:0 0 2px 2px;
-      opacity:0; transition:opacity 0.3s ease;
-    }
-
+    .sport-card::before { content:''; position:absolute; inset:0; border-radius:20px; opacity:0; transition:opacity 0.3s ease; }
+    .sport-card::after  { content:''; position:absolute; top:0; left:24px; right:24px; height:1.5px; border-radius:0 0 2px 2px; opacity:0; transition:opacity 0.3s ease; }
     .sport-card:hover { transform: translateY(-4px); }
     .sport-card:hover::before, .sport-card:hover::after { opacity: 0.6; }
     .sport-card.selected { transform: translateY(-5px); }
     .sport-card.selected::before, .sport-card.selected::after { opacity: 1; }
 
-    /* Per-sport colours */
-    .s-cricket   { --c: 200,169,110; }
-    .s-football  { --c: 80,200,120;  }
-    .s-basketball{ --c: 240,130,60;  }
-    .s-pickleball{ --c: 100,180,240; }
-    .s-badminton { --c: 200,100,220; }
+    .s-cricket    { --c: 200,169,110; }
+    .s-football   { --c: 80,200,120;  }
+    .s-basketball { --c: 240,130,60;  }
+    .s-pickleball { --c: 100,180,240; }
+    .s-badminton  { --c: 200,100,220; }
 
     .sport-card::before { background: radial-gradient(ellipse at top center, rgba(var(--c),0.10), transparent 65%); }
     .sport-card::after  { background: linear-gradient(90deg, transparent, rgba(var(--c),0.7), transparent); }
@@ -160,8 +111,7 @@
     .sport-card.selected { border-color: rgba(var(--c),0.75); background: rgba(var(--c),0.05); }
 
     .sport-emoji {
-      font-size: 2.6rem;
-      line-height: 1;
+      font-size: 2.6rem; line-height: 1;
       filter: drop-shadow(0 0 10px rgba(var(--c),0.25));
       transition: filter 0.3s, transform 0.3s;
     }
@@ -170,113 +120,225 @@
       filter: drop-shadow(0 0 18px rgba(var(--c),0.55));
       transform: scale(1.08);
     }
-
-    .sport-name {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.08rem;
-      font-weight: 600;
-      color: var(--text);
-      text-align: center;
-    }
+    .sport-name { font-family:'Playfair Display',serif; font-size:1.08rem; font-weight:600; color:var(--text); text-align:center; }
     .sport-card.selected .sport-name { color: rgb(var(--c)); }
-
     .sport-tag {
-      font-size: 10.5px;
-      font-weight: 500;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      color: rgba(var(--c), 0.6);
-      background: rgba(var(--c), 0.08);
-      border: 1px solid rgba(var(--c), 0.18);
-      border-radius: 99px;
-      padding: 3px 10px;
+      font-size:10.5px; font-weight:500; letter-spacing:0.07em; text-transform:uppercase;
+      color:rgba(var(--c),0.6); background:rgba(var(--c),0.08);
+      border:1px solid rgba(var(--c),0.18); border-radius:99px; padding:3px 10px;
     }
 
-    /* Checkmark badge */
     .check-badge {
-      position: absolute;
-      top: 13px; right: 13px;
-      width: 22px; height: 22px;
-      border-radius: 50%;
-      background: rgb(var(--c));
-      display: flex; align-items: center; justify-content: center;
-      opacity: 0;
-      transform: scale(0.6);
-      transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.34,1.56,0.64,1);
+      position:absolute; top:13px; right:13px;
+      width:22px; height:22px; border-radius:50%;
+      background:rgb(var(--c));
+      display:flex; align-items:center; justify-content:center;
+      opacity:0; transform:scale(0.6);
+      transition:opacity 0.22s ease, transform 0.22s cubic-bezier(0.34,1.56,0.64,1);
     }
-    .check-badge svg { width: 12px; height: 12px; stroke: #0d0f14; stroke-width: 2.5; }
-    .sport-card.selected .check-badge { opacity: 1; transform: scale(1); }
-
-    /* CTA */
-    .cta-wrap {
-      display: flex;
-      justify-content: center;
-      animation: fadeUp 0.55s ease 0.4s both;
-    }
-
-    .cta-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 15px 36px;
-      border-radius: 14px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.95rem;
-      font-weight: 500;
-      cursor: pointer;
-      border: none;
-      background: var(--accent);
-      color: #0d0f14;
-      letter-spacing: 0.02em;
-      transition: opacity 0.2s, transform 0.18s, box-shadow 0.2s;
-      box-shadow: 0 4px 24px rgba(200,169,110,0.18);
-      position: relative;
-      overflow: hidden;
-    }
-    .cta-btn::before {
-      content:''; position:absolute; inset:0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.12), transparent 60%);
-    }
-    .cta-btn:disabled {
-      opacity: 0.38;
-      cursor: not-allowed;
-      box-shadow: none;
-    }
-    .cta-btn:not(:disabled):hover {
-      opacity: 0.88;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 32px rgba(200,169,110,0.28);
-    }
-    .cta-btn:not(:disabled):active { transform: scale(0.97); }
-    .cta-btn svg { width: 17px; height: 17px; stroke: #0d0f14; stroke-width: 2.2; flex-shrink: 0; }
-
-    /* Loading state */
-    .cta-btn.loading { pointer-events: none; }
-    .spinner {
-      width: 17px; height: 17px;
-      border: 2.5px solid rgba(13,15,20,0.25);
-      border-top-color: #0d0f14;
-      border-radius: 50%;
-      animation: spin 0.75s linear infinite;
-      display: none;
-    }
-    .cta-btn.loading .spinner { display: block; }
-    .cta-btn.loading .btn-arrow { display: none; }
-    @keyframes spin { to{transform:rotate(360deg)} }
+    .check-badge svg { width:12px; height:12px; stroke:#0d0f14; stroke-width:2.5; }
+    .sport-card.selected .check-badge { opacity:1; transform:scale(1); }
 
     .selected-hint {
-      text-align: center;
-      margin-bottom: 24px;
-      min-height: 22px;
-      font-size: 0.875rem;
-      color: var(--muted);
-      animation: fadeUp 0.4s ease both;
-      transition: color 0.2s;
+      text-align:center; margin-bottom:24px; min-height:22px;
+      font-size:0.875rem; color:var(--muted);
+      animation:fadeUp 0.4s ease both; transition:color 0.2s;
     }
-    .selected-hint.active { color: var(--accent); }
+    .selected-hint.active { color:var(--accent); }
+
+    .cta-wrap { display:flex; justify-content:center; animation:fadeUp 0.55s ease 0.4s both; }
+    .cta-btn {
+      display:inline-flex; align-items:center; gap:10px;
+      padding:15px 36px; border-radius:14px;
+      font-family:'DM Sans',sans-serif; font-size:0.95rem; font-weight:500;
+      cursor:pointer; border:none; background:var(--accent); color:#0d0f14;
+      letter-spacing:0.02em;
+      transition:opacity 0.2s, transform 0.18s, box-shadow 0.2s;
+      box-shadow:0 4px 24px rgba(200,169,110,0.18);
+      position:relative; overflow:hidden;
+    }
+    .cta-btn::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,0.12),transparent 60%); }
+    .cta-btn:disabled { opacity:0.38; cursor:not-allowed; box-shadow:none; }
+    .cta-btn:not(:disabled):hover { opacity:0.88; transform:translateY(-2px); box-shadow:0 8px 32px rgba(200,169,110,0.28); }
+    .cta-btn:not(:disabled):active { transform:scale(0.97); }
+    .cta-btn svg { width:17px; height:17px; stroke:#0d0f14; stroke-width:2.2; flex-shrink:0; }
+
+    /* ════════════════════════════════
+       STEP 2 — VENUES
+    ════════════════════════════════ */
+    #step2 { max-width: 900px; }
+
+    .sport-pill {
+      display:inline-flex; align-items:center; gap:8px;
+      padding:5px 16px; border-radius:99px;
+      border:1px solid rgba(200,169,110,0.3);
+      background:rgba(200,169,110,0.08);
+      font-size:12px; font-weight:500;
+      color:var(--accent); letter-spacing:0.06em;
+      text-transform:uppercase; margin-bottom:16px;
+    }
+    .venues-heading { font-family:'Playfair Display',serif; font-size:clamp(1.7rem,4.5vw,2.4rem); font-weight:700; line-height:1.18; margin-bottom:8px; }
+    .venues-heading em { font-style:normal; color:var(--accent); }
+    .venues-sub { font-size:0.9rem; color:var(--muted); font-weight:300; }
+    .venues-header { margin-bottom:40px; animation:fadeUp 0.5s ease both; }
+
+    /* Date bar */
+    .datebar {
+      display:flex; align-items:flex-end; gap:14px;
+      background:var(--panel); border:1px solid var(--border);
+      border-radius:18px; padding:22px 26px; margin-bottom:44px;
+      animation:fadeUp 0.5s ease 0.1s both;
+    }
+    .datebar-label { font-size:11px; font-weight:500; color:var(--muted); letter-spacing:0.07em; text-transform:uppercase; margin-bottom:8px; }
+    .date-field { flex:1; display:flex; flex-direction:column; }
+    .date-input {
+      background:var(--card-bg); border:1px solid var(--card-border);
+      border-radius:11px; padding:11px 16px;
+      color:var(--text); font-family:'DM Sans',sans-serif;
+      font-size:0.93rem; outline:none; transition:border-color 0.2s; color-scheme:dark;
+    }
+    .date-input:focus { border-color:rgba(200,169,110,0.5); }
+
+    .search-btn {
+      display:inline-flex; align-items:center; gap:9px;
+      padding:12px 26px; border-radius:11px;
+      background:var(--accent); color:#0d0f14;
+      font-family:'DM Sans',sans-serif; font-size:0.9rem; font-weight:500;
+      border:none; cursor:pointer;
+      transition:opacity 0.18s, transform 0.15s;
+      white-space:nowrap; flex-shrink:0; letter-spacing:0.02em;
+    }
+    .search-btn:hover { opacity:0.85; transform:translateY(-1px); }
+    .search-btn:active { transform:scale(0.97); }
+    .search-btn svg { width:15px; height:15px; stroke:#0d0f14; stroke-width:2.2; }
+    .search-btn.loading { opacity:0.6; pointer-events:none; }
+
+    /* Venue cards */
+    #venuesList { display:flex; flex-direction:column; gap:28px; }
+
+    .venue-card {
+      background:var(--panel); border:1px solid var(--border);
+      border-radius:22px; overflow:hidden;
+      animation:fadeUp 0.45s ease both;
+    }
+    .venue-card:nth-child(1){animation-delay:0.05s}
+    .venue-card:nth-child(2){animation-delay:0.12s}
+    .venue-card:nth-child(3){animation-delay:0.19s}
+
+    .venue-top {
+      display:flex; align-items:center; gap:20px;
+      padding:22px 24px 20px; border-bottom:1px solid var(--border);
+    }
+    .venue-img-placeholder {
+      width:88px; height:72px; border-radius:13px;
+      background:var(--card-bg); border:1px solid var(--card-border);
+      flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:1.8rem;
+    }
+    .venue-info { flex:1; min-width:0; }
+    .venue-name { font-family:'Playfair Display',serif; font-size:1.15rem; font-weight:600; color:var(--text); margin-bottom:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .venue-meta { display:flex; flex-wrap:wrap; gap:12px; font-size:0.825rem; color:var(--muted); }
+    .venue-meta span { display:flex; align-items:center; gap:5px; }
+    .venue-meta svg { width:13px; height:13px; stroke:var(--muted); }
+
+    .timing-btn {
+      display:inline-flex; align-items:center; gap:8px;
+      padding:9px 18px; border-radius:10px;
+      border:1px solid var(--card-border); background:var(--card-bg);
+      color:var(--accent); font-family:'DM Sans',sans-serif;
+      font-size:0.845rem; font-weight:500;
+      cursor:pointer; transition:border-color 0.18s, background 0.18s; flex-shrink:0;
+    }
+    .timing-btn:hover { border-color:rgba(200,169,110,0.4); background:rgba(200,169,110,0.06); }
+    .timing-btn svg { width:14px; height:14px; stroke:var(--accent); transition:transform 0.25s ease; }
+    .timing-btn.open svg { transform:rotate(180deg); }
+
+    .slots-panel { max-height:0; overflow:hidden; transition:max-height 0.38s cubic-bezier(0.4,0,0.2,1), padding 0.3s ease; }
+    .slots-panel.open { max-height:480px; }
+    .slots-inner { padding:22px 24px 24px; }
+
+    .slots-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+    .slots-title { font-size:0.82rem; font-weight:500; color:var(--muted); letter-spacing:0.06em; text-transform:uppercase; }
+    .slots-legend { display:flex; gap:14px; }
+    .legend-dot { display:flex; align-items:center; gap:6px; font-size:0.78rem; color:var(--muted); }
+    .legend-dot::before { content:''; width:8px; height:8px; border-radius:50%; border:1.5px solid currentColor; }
+    .legend-available { color:var(--slot-available); }
+    .legend-taken     { color:var(--slot-unavailable); }
+
+    .slots-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:9px; }
+
+    .slot {
+      border-radius:10px; border:1.5px solid;
+      padding:10px 6px; display:flex; flex-direction:column; align-items:center; gap:4px;
+      cursor:pointer; transition:transform 0.18s, background 0.18s, box-shadow 0.18s;
+      position:relative; user-select:none;
+    }
+    .slot.available { border-color:rgba(62,207,110,0.4); background:rgba(62,207,110,0.05); }
+    .slot.available:hover { border-color:rgba(62,207,110,0.75); background:rgba(62,207,110,0.10); transform:translateY(-2px); box-shadow:0 4px 16px rgba(62,207,110,0.12); }
+    .slot.unavailable { border-color:rgba(224,82,82,0.3); background:rgba(224,82,82,0.04); cursor:not-allowed; opacity:0.7; }
+    .slot.selected { border-color:var(--accent) !important; background:rgba(200,169,110,0.12) !important; box-shadow:0 0 0 2px rgba(200,169,110,0.25); }
+    .slot-time { font-size:0.76rem; font-weight:500; color:var(--text); text-align:center; line-height:1.2; }
+    .slot-status { font-size:0.65rem; letter-spacing:0.04em; text-transform:uppercase; }
+    .slot.available   .slot-status { color:var(--slot-available); }
+    .slot.unavailable .slot-status { color:var(--slot-unavailable); }
+    .slot.selected    .slot-status { color:var(--accent); }
+
+    .book-strip {
+      display:flex; align-items:center; justify-content:space-between; gap:16px;
+      background:rgba(200,169,110,0.07); border-top:1px solid rgba(200,169,110,0.18);
+      padding:16px 24px; max-height:0; overflow:hidden;
+      transition:max-height 0.3s ease, padding 0.3s ease;
+    }
+    .book-strip.visible { max-height:80px; }
+    .book-strip-info { font-size:0.88rem; color:var(--text); }
+    .book-strip-info strong { color:var(--accent); }
+    .book-now-btn {
+      display:inline-flex; align-items:center; gap:8px;
+      padding:11px 24px; border-radius:11px;
+      background:var(--accent); color:#0d0f14;
+      font-family:'DM Sans',sans-serif; font-size:0.88rem; font-weight:500;
+      border:none; cursor:pointer; transition:opacity 0.18s, transform 0.15s;
+      white-space:nowrap; flex-shrink:0;
+    }
+    .book-now-btn:hover { opacity:0.85; transform:translateY(-1px); }
+    .book-now-btn svg { width:14px; height:14px; stroke:#0d0f14; stroke-width:2.2; }
+
+    .empty-state { text-align:center; padding:64px 24px; color:var(--muted); font-size:0.92rem; display:none; }
+    .empty-state .big { font-size:3rem; margin-bottom:16px; }
+
+    /* ── Confirmation overlay ── */
+    .confirm-overlay {
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(13,15,20,0.85); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .confirm-overlay.show { opacity: 1; pointer-events: all; }
+    .confirm-box {
+      background: var(--panel); border: 1px solid rgba(200,169,110,0.3);
+      border-radius: 24px; padding: 44px 40px;
+      max-width: 420px; width: 90%;
+      text-align: center;
+      transform: translateY(24px) scale(0.96);
+      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .confirm-overlay.show .confirm-box { transform: translateY(0) scale(1); }
+    .confirm-icon { font-size: 3rem; margin-bottom: 18px; }
+    .confirm-title { font-family:'Playfair Display',serif; font-size:1.5rem; margin-bottom:10px; color:var(--accent); }
+    .confirm-detail { font-size:0.88rem; color:var(--muted); line-height:1.75; margin-bottom:28px; }
+    .confirm-detail strong { color:var(--text); }
+    .confirm-close {
+      padding:12px 32px; border-radius:12px; border:none;
+      background:var(--accent); color:#0d0f14;
+      font-family:'DM Sans',sans-serif; font-size:0.9rem; font-weight:500;
+      cursor:pointer; transition:opacity 0.18s;
+    }
+    .confirm-close:hover { opacity:0.85; }
 
     @media (max-width: 600px) {
-      .sports-grid { grid-template-columns: repeat(2, 1fr); }
+      .sports-grid { grid-template-columns: repeat(2,1fr); }
+      .slots-grid { grid-template-columns: repeat(3,1fr); }
+      .venue-top, .datebar { flex-wrap: wrap; }
     }
     @media (max-width: 380px) {
       .sports-grid { grid-template-columns: 1fr; }
@@ -289,167 +351,328 @@
   <div class="blob blob-2"></div>
   <div class="blob blob-3"></div>
 
-  <div class="page">
-
-    <a href="/" class="back-link">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="19" y1="12" x2="5" y2="12"/>
-        <polyline points="12 19 5 12 12 5"/>
-      </svg>
-      Back to home
-    </a>
+  <!-- ══════════════════════════════
+       STEP 1 — SPORT SELECTION
+  ══════════════════════════════ -->
+  <div class="step active" id="step1">
 
     <header class="header">
-
       <h1 class="heading">Pick your <em>sport</em></h1>
       <p class="sub">What do you want to play? We'll find it for you.</p>
     </header>
 
-    <form id="sportForm" action="/booking" method="POST">
-      <input type="hidden" name="sport" id="sportInput" value="" />
+    <div class="sports-grid">
 
-      <div class="sports-grid">
-
-        <!-- Cricket -->
-        <label class="sport-card s-cricket" data-sport="cricket">
-          <input type="radio" name="sport_radio" value="cricket" />
-          <div class="check-badge">
-            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="sport-emoji">🏏</div>
-          <div class="sport-name">Cricket</div>
-          <div class="sport-tag">Bat & ball</div>
-        </label>
-
-        <!-- Football -->
-        <label class="sport-card s-football" data-sport="football">
-          <input type="radio" name="sport_radio" value="football" />
-          <div class="check-badge">
-            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="sport-emoji">⚽</div>
-          <div class="sport-name">Football</div>
-          <div class="sport-tag">Team sport</div>
-        </label>
-
-        <!-- Basketball -->
-        <label class="sport-card s-basketball" data-sport="basketball">
-          <input type="radio" name="sport_radio" value="basketball" />
-          <div class="check-badge">
-            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="sport-emoji">🏀</div>
-          <div class="sport-name">Basketball</div>
-          <div class="sport-tag">Court game</div>
-        </label>
-
-        <!-- Pickleball -->
-        <label class="sport-card s-pickleball" data-sport="pickleball">
-          <input type="radio" name="sport_radio" value="pickleball" />
-          <div class="check-badge">
-            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="sport-emoji">🏓</div>
-          <div class="sport-name">Pickleball</div>
-          <div class="sport-tag">Racquet sport</div>
-        </label>
-
-        <!-- Badminton -->
-        <label class="sport-card s-badminton" data-sport="badminton">
-          <input type="radio" name="sport_radio" value="badminton" />
-          <div class="check-badge">
-            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="sport-emoji">🏸</div>
-          <div class="sport-name">Badminton</div>
-          <div class="sport-tag">Shuttle sport</div>
-        </label>
-
+      <div class="sport-card s-cricket" data-sport="cricket" onclick="selectSport(this)">
+        <div class="check-badge"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="sport-emoji">🏏</div>
+        <div class="sport-name">Cricket</div>
+        <div class="sport-tag">Bat &amp; ball</div>
       </div>
 
-      <p class="selected-hint" id="selectedHint">Select a sport to continue</p>
-
-      <div class="cta-wrap">
-        <button type="submit" class="cta-btn" id="ctaBtn" disabled>
-          <div class="spinner"></div>
-          <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="5" y1="12" x2="19" y2="12"/>
-            <polyline points="12 5 19 12 12 19"/>
-          </svg>
-          Find venues
-        </button>
+      <div class="sport-card s-football" data-sport="football" onclick="selectSport(this)">
+        <div class="check-badge"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="sport-emoji">⚽</div>
+        <div class="sport-name">Football</div>
+        <div class="sport-tag">Team sport</div>
       </div>
-    </form>
+
+      <div class="sport-card s-basketball" data-sport="basketball" onclick="selectSport(this)">
+        <div class="check-badge"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="sport-emoji">🏀</div>
+        <div class="sport-name">Basketball</div>
+        <div class="sport-tag">Court game</div>
+      </div>
+
+      <div class="sport-card s-pickleball" data-sport="pickleball" onclick="selectSport(this)">
+        <div class="check-badge"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="sport-emoji">🏓</div>
+        <div class="sport-name">Pickleball</div>
+        <div class="sport-tag">Racquet sport</div>
+      </div>
+
+      <div class="sport-card s-badminton" data-sport="badminton" onclick="selectSport(this)">
+        <div class="check-badge"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="sport-emoji">🏸</div>
+        <div class="sport-name">Badminton</div>
+        <div class="sport-tag">Shuttle sport</div>
+      </div>
+
+    </div>
+
+    <p class="selected-hint" id="selectedHint">Select a sport to continue</p>
+
+    <div class="cta-wrap">
+      <button class="cta-btn" id="ctaBtn" disabled onclick="goToVenues()">
+        <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+        </svg>
+        Find venues
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       STEP 2 — VENUES & BOOKING
+  ══════════════════════════════ -->
+  <div class="step" id="step2">
+
+    <button class="back-link" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+      </svg>
+      Change sport
+    </button>
+
+    <header class="venues-header">
+      <div class="sport-pill" id="sportPill">🏏 Cricket</div>
+      <h1 class="venues-heading">Find a <em>venue</em> near you</h1>
+      <p class="venues-sub">Pick a date and we'll show what's available.</p>
+    </header>
+
+    <div class="datebar">
+      <div class="date-field">
+        <div class="datebar-label">Select date</div>
+        <input type="date" class="date-input" id="dateInput" />
+      </div>
+      <button class="search-btn" id="searchBtn" onclick="searchVenues()">
+        <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        Search
+      </button>
+    </div>
+
+    <div id="venuesList"></div>
+    <div class="empty-state" id="emptyState">
+      <div class="big">🏟️</div>
+      No venues found for this date. Try a different day.
+    </div>
 
   </div>
 
-  <script>
-    const cards   = document.querySelectorAll('.sport-card');
-    const ctaBtn  = document.getElementById('ctaBtn');
-    const hint    = document.getElementById('selectedHint');
-    const hidden  = document.getElementById('sportInput');
-    const form    = document.getElementById('sportForm');
+  <!-- ══════════════════════════════
+       BOOKING CONFIRMATION
+  ══════════════════════════════ -->
+  <div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-box">
+      <div class="confirm-icon">🎉</div>
+      <div class="confirm-title">Booking Confirmed!</div>
+      <div class="confirm-detail" id="confirmDetail"></div>
+      <button class="confirm-close" onclick="closeConfirm()">Done</button>
+    </div>
+  </div>
 
-    const labels = {
-      cricket:    'Cricket selected — let\'s find you a pitch 🏏',
-      football:   'Football selected — time to hit the turf ⚽',
-      basketball: 'Basketball selected — court is calling 🏀',
-      pickleball: 'Pickleball selected — great choice! 🏓',
-      badminton:  'Badminton selected — shuttle up 🏸',
+  <script>
+    /* ── State ── */
+    let selectedSport = '';
+    let selectedSlots = {};
+
+    const sportEmoji = { cricket:'🏏', football:'⚽', basketball:'🏀', pickleball:'🏓', badminton:'🏸' };
+    const sportLabel = { cricket:'Cricket', football:'Football', basketball:'Basketball', pickleball:'Pickleball', badminton:'Badminton' };
+    const sportHints = {
+      cricket:    "Cricket selected — let's find you a pitch 🏏",
+      football:   "Football selected — time to hit the turf ⚽",
+      basketball: "Basketball selected — court is calling 🏀",
+      pickleball: "Pickleball selected — great choice! 🏓",
+      badminton:  "Badminton selected — shuttle up 🏸",
     };
 
-    cards.forEach(card => {
-      card.addEventListener('click', () => {
-        const sport = card.dataset.sport;
+    /* ── Step 1: sport selection ── */
+    function selectSport(card) {
+      document.querySelectorAll('.sport-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      selectedSport = card.dataset.sport;
 
-        // Deselect all
-        cards.forEach(c => c.classList.remove('selected'));
+      const hint = document.getElementById('selectedHint');
+      hint.textContent = sportHints[selectedSport];
+      hint.classList.add('active');
+      document.getElementById('ctaBtn').disabled = false;
+    }
 
-        // Select clicked
-        card.classList.add('selected');
-        card.querySelector('input[type="radio"]').checked = true;
+    function goToVenues() {
+      if (!selectedSport) return;
+      document.getElementById('step1').classList.remove('active');
+      const s2 = document.getElementById('step2');
+      s2.classList.add('active');
+      document.getElementById('sportPill').textContent = `${sportEmoji[selectedSport]} ${sportLabel[selectedSport]}`;
 
-        // Update hidden field
-        hidden.value = sport;
+      // Set min date
+      const today = new Date().toISOString().split('T')[0];
+      const di = document.getElementById('dateInput');
+      di.min = today;
+      di.value = today;
 
-        // Update hint
-        hint.textContent = labels[sport];
-        hint.classList.add('active');
+      selectedSlots = {};
+      searchVenues();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-        // Enable CTA
-        ctaBtn.disabled = false;
+    function goBack() {
+      document.getElementById('step2').classList.remove('active');
+      document.getElementById('step1').classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /* ── Mock data ── */
+    const VENUE_DATA = {
+      cricket:    [
+        { id:'v1', name:'Green Field Arena',      emoji:'🏟️', location:'Adajan, Surat',  distance:'1.2 km', price:'₹600/hr' },
+        { id:'v2', name:'City Sports Complex',    emoji:'🏢', location:'Vesu, Surat',    distance:'3.4 km', price:'₹800/hr' },
+        { id:'v3', name:"Champions Court",        emoji:'🏆', location:'Pal, Surat',     distance:'5.1 km', price:'₹500/hr' },
+      ],
+      football:   [
+        { id:'f1', name:'Turf One',               emoji:'⚽', location:'Athwa, Surat',   distance:'0.8 km', price:'₹700/hr' },
+        { id:'f2', name:'Goal Zone Arena',        emoji:'🏟️', location:'Katargam, Surat',distance:'2.1 km', price:'₹550/hr' },
+      ],
+      basketball: [
+        { id:'b1', name:'Slam Dunk Courts',       emoji:'🏀', location:'Citylight, Surat',distance:'1.5 km', price:'₹400/hr' },
+        { id:'b2', name:'Hoop Central',           emoji:'🏢', location:'Piplod, Surat',   distance:'3.0 km', price:'₹450/hr' },
+      ],
+      pickleball: [
+        { id:'p1', name:'Pickle Palace',          emoji:'🏓', location:'Vesu, Surat',     distance:'2.8 km', price:'₹350/hr' },
+      ],
+      badminton:  [
+        { id:'ba1', name:'Shuttle Hub',           emoji:'🏸', location:'Althan, Surat',   distance:'1.9 km', price:'₹300/hr' },
+        { id:'ba2', name:'Feather Court',         emoji:'🏢', location:'Adajan, Surat',   distance:'0.6 km', price:'₹350/hr' },
+      ],
+    };
+
+    function generateSlots(venueId) {
+      return Array.from({ length: 18 }, (_, i) => {
+        const h  = 6 + i;
+        const hh = String(h).padStart(2,'0');
+        const eh = String(h + 1).padStart(2,'0');
+        return { id:`${venueId}-slot-${i}`, time:`${hh}:00 – ${eh}:00`, available: Math.random() > 0.35 };
       });
-    });
+    }
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+    /* ── Search / render ── */
+    async function searchVenues() {
+      const btn = document.getElementById('searchBtn');
+      btn.classList.add('loading');
+      btn.innerHTML = 'Searching…';
 
-      if (!hidden.value) return;
+      await new Promise(r => setTimeout(r, 600));
 
-      // Loading state
-      ctaBtn.classList.add('loading');
-      ctaBtn.disabled = true;
+      const venues = (VENUE_DATA[selectedSport] || []).map(v => ({ ...v, slots: generateSlots(v.id) }));
+      renderVenues(venues);
 
-      try {
-        const res = await fetch('/api/booking/select-sport', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ sport: hidden.value }),
-        });
+      btn.classList.remove('loading');
+      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;stroke:#0d0f14;stroke-width:2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Search`;
+    }
 
-        if (res.ok) {
-          // Redirect to the main booking page returned by backend
-          const data = await res.json();
-          window.location.href = data.redirect || '/booking/venues';
-        } else {
-          // Fallback: just navigate forward
-          window.location.href = `/booking?sport=${hidden.value}`;
-        }
-      } catch (err) {
-        // No backend yet — navigate to next step with sport param
-        window.location.href = `venues.html?sport=${hidden.value}`;
+    function renderVenues(venues) {
+      const list  = document.getElementById('venuesList');
+      const empty = document.getElementById('emptyState');
+      list.innerHTML = '';
+      selectedSlots = {};
+
+      if (!venues || venues.length === 0) { empty.style.display = 'block'; return; }
+      empty.style.display = 'none';
+
+      venues.forEach((v, idx) => {
+        const card = document.createElement('div');
+        card.className = 'venue-card';
+        card.style.animationDelay = `${idx * 0.07}s`;
+        card.dataset.venueId = v.id;
+
+        const slotsHtml = v.slots.map(slot => `
+          <div class="slot ${slot.available ? 'available' : 'unavailable'}"
+               data-slot-id="${slot.id}" data-venue-id="${v.id}"
+               data-time="${slot.time}" data-available="${slot.available}"
+               onclick="selectSlot(this)">
+            <div class="slot-time">${slot.time.replace(' – ','<br>')}</div>
+            <div class="slot-status">${slot.available ? 'Open' : 'Taken'}</div>
+          </div>`).join('');
+
+        card.innerHTML = `
+          <div class="venue-top">
+            <div class="venue-img-placeholder">${v.emoji || '🏟️'}</div>
+            <div class="venue-info">
+              <div class="venue-name">${v.name}</div>
+              <div class="venue-meta">
+                <span><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>${v.location}</span>
+                <span><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${v.distance}</span>
+                <span><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>${v.price}</span>
+              </div>
+            </div>
+            <button class="timing-btn" onclick="toggleSlots('${v.id}', this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              See timings
+            </button>
+          </div>
+          <div class="slots-panel" id="slots-${v.id}">
+            <div class="slots-inner">
+              <div class="slots-header">
+                <span class="slots-title">18 time slots</span>
+                <div class="slots-legend">
+                  <span class="legend-dot legend-available">Available</span>
+                  <span class="legend-dot legend-taken">Taken</span>
+                </div>
+              </div>
+              <div class="slots-grid">${slotsHtml}</div>
+            </div>
+          </div>
+          <div class="book-strip" id="strip-${v.id}">
+            <div class="book-strip-info">
+              Selected: <strong id="strip-time-${v.id}">–</strong>
+            </div>
+            <button class="book-now-btn" onclick="bookSlot('${v.id}', '${v.name}')">
+              <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Book now
+            </button>
+          </div>`;
+
+        list.appendChild(card);
+      });
+    }
+
+    function toggleSlots(venueId, btn) {
+      const panel = document.getElementById(`slots-${venueId}`);
+      const open  = panel.classList.toggle('open');
+      btn.classList.toggle('open', open);
+      // Update label text node
+      btn.childNodes.forEach(n => { if (n.nodeType === 3) n.textContent = open ? ' Hide timings' : ' See timings'; });
+    }
+
+    function selectSlot(el) {
+      if (el.dataset.available !== 'true') return;
+      const venueId = el.dataset.venueId;
+      const slotId  = el.dataset.slotId;
+      const time    = el.dataset.time;
+
+      document.querySelectorAll(`.slot[data-venue-id="${venueId}"]`).forEach(s => s.classList.remove('selected'));
+
+      if (selectedSlots[venueId] === slotId) {
+        delete selectedSlots[venueId];
+        document.getElementById(`strip-${venueId}`).classList.remove('visible');
+        return;
       }
-    });
+      el.classList.add('selected');
+      selectedSlots[venueId] = slotId;
+      document.getElementById(`strip-time-${venueId}`).textContent = time;
+      document.getElementById(`strip-${venueId}`).classList.add('visible');
+    }
+
+    function bookSlot(venueId, venueName) {
+      const slotId = selectedSlots[venueId];
+      if (!slotId) return;
+      const date = document.getElementById('dateInput').value;
+      const time = document.getElementById(`strip-time-${venueId}`).textContent;
+      const sport = sportLabel[selectedSport] || selectedSport;
+
+      document.getElementById('confirmDetail').innerHTML =
+        `<strong>${sport}</strong> at <strong>${venueName}</strong><br>
+         Date: <strong>${date}</strong><br>
+         Time: <strong>${time}</strong>`;
+
+      document.getElementById('confirmOverlay').classList.add('show');
+    }
+
+    function closeConfirm() {
+      document.getElementById('confirmOverlay').classList.remove('show');
+    }
   </script>
 
 </body>
