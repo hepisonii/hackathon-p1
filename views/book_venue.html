@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Book a Session — SportSpot</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0f14;
+      --panel: #13161d;
+      --border: #1f2330;
+      --accent: #c8a96e;
+      --text: #e8e6e0;
+      --muted: #6b6f7c;
+      --card-bg: #191c25;
+      --card-border: #252837;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .blob { position: fixed; border-radius: 50%; pointer-events: none; filter: blur(80px); z-index: 0; }
+    .blob-1 { width: 600px; height: 600px; top: -200px; left: 50%; transform: translateX(-50%); background: radial-gradient(circle, rgba(200,169,110,0.08), transparent 70%); }
+    .blob-2 { width: 400px; height: 400px; bottom: -100px; right: -80px; background: radial-gradient(circle, rgba(80,100,200,0.07), transparent 70%); }
+    .blob-3 { width: 300px; height: 300px; top: 40%; left: -80px; background: radial-gradient(circle, rgba(200,169,110,0.05), transparent 70%); }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 60px 24px 80px;
+    }
+
+    /* Back link */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.875rem;
+      text-decoration: none;
+      margin-bottom: 48px;
+      transition: color 0.18s;
+    }
+    .back-link:hover { color: var(--accent); }
+    .back-link svg { width: 16px; height: 16px; stroke: currentColor; }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 56px;
+      animation: fadeUp 0.5s ease both;
+    }
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 18px;
+      border-radius: 99px;
+      border: 1px solid rgba(200,169,110,0.3);
+      background: rgba(200,169,110,0.08);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--accent);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .step-indicator {
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+    .step-indicator span { color: var(--accent); }
+
+    .heading {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 5vw, 2.6rem);
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 12px;
+    }
+    .heading em { font-style: normal; color: var(--accent); }
+    .sub { font-size: 0.95rem; color: var(--muted); font-weight: 300; line-height: 1.65; }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+
+    /* Sports grid */
+    .sports-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .sport-card {
+      position: relative;
+      cursor: pointer;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: var(--panel);
+      padding: 28px 20px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+      animation: fadeUp 0.5s ease both;
+      overflow: hidden;
+      user-select: none;
+    }
+    .sport-card:nth-child(1){animation-delay:0.08s}
+    .sport-card:nth-child(2){animation-delay:0.14s}
+    .sport-card:nth-child(3){animation-delay:0.20s}
+    .sport-card:nth-child(4){animation-delay:0.26s}
+    .sport-card:nth-child(5){animation-delay:0.32s}
+
+    .sport-card::before {
+      content:''; position:absolute; inset:0;
+      border-radius:20px; opacity:0; transition:opacity 0.3s ease;
+    }
+
+    /* Hidden radio */
+    .sport-card input[type="radio"] {
+      position: absolute; opacity: 0; width: 0; height: 0;
+    }
+
+    /* Glow shimmer on top edge */
+    .sport-card::after {
+      content:''; position:absolute; top:0; left:24px; right:24px;
+      height:1.5px; border-radius:0 0 2px 2px;
+      opacity:0; transition:opacity 0.3s ease;
+    }
+
+    .sport-card:hover { transform: translateY(-4px); }
+    .sport-card:hover::before, .sport-card:hover::after { opacity: 0.6; }
+    .sport-card.selected { transform: translateY(-5px); }
+    .sport-card.selected::before, .sport-card.selected::after { opacity: 1; }
+
+    /* Per-sport colours */
+    .s-cricket   { --c: 200,169,110; }
+    .s-football  { --c: 80,200,120;  }
+    .s-basketball{ --c: 240,130,60;  }
+    .s-pickleball{ --c: 100,180,240; }
+    .s-badminton { --c: 200,100,220; }
+
+    .sport-card::before { background: radial-gradient(ellipse at top center, rgba(var(--c),0.10), transparent 65%); }
+    .sport-card::after  { background: linear-gradient(90deg, transparent, rgba(var(--c),0.7), transparent); }
+    .sport-card:hover   { border-color: rgba(var(--c),0.45); }
+    .sport-card.selected { border-color: rgba(var(--c),0.75); background: rgba(var(--c),0.05); }
+
+    .sport-emoji {
+      font-size: 2.6rem;
+      line-height: 1;
+      filter: drop-shadow(0 0 10px rgba(var(--c),0.25));
+      transition: filter 0.3s, transform 0.3s;
+    }
+    .sport-card:hover .sport-emoji,
+    .sport-card.selected .sport-emoji {
+      filter: drop-shadow(0 0 18px rgba(var(--c),0.55));
+      transform: scale(1.08);
+    }
+
+    .sport-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.08rem;
+      font-weight: 600;
+      color: var(--text);
+      text-align: center;
+    }
+    .sport-card.selected .sport-name { color: rgb(var(--c)); }
+
+    .sport-tag {
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: rgba(var(--c), 0.6);
+      background: rgba(var(--c), 0.08);
+      border: 1px solid rgba(var(--c), 0.18);
+      border-radius: 99px;
+      padding: 3px 10px;
+    }
+
+    /* Checkmark badge */
+    .check-badge {
+      position: absolute;
+      top: 13px; right: 13px;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: rgb(var(--c));
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0;
+      transform: scale(0.6);
+      transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .check-badge svg { width: 12px; height: 12px; stroke: #0d0f14; stroke-width: 2.5; }
+    .sport-card.selected .check-badge { opacity: 1; transform: scale(1); }
+
+    /* CTA */
+    .cta-wrap {
+      display: flex;
+      justify-content: center;
+      animation: fadeUp 0.55s ease 0.4s both;
+    }
+
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px 36px;
+      border-radius: 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: var(--accent);
+      color: #0d0f14;
+      letter-spacing: 0.02em;
+      transition: opacity 0.2s, transform 0.18s, box-shadow 0.2s;
+      box-shadow: 0 4px 24px rgba(200,169,110,0.18);
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-btn::before {
+      content:''; position:absolute; inset:0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.12), transparent 60%);
+    }
+    .cta-btn:disabled {
+      opacity: 0.38;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .cta-btn:not(:disabled):hover {
+      opacity: 0.88;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(200,169,110,0.28);
+    }
+    .cta-btn:not(:disabled):active { transform: scale(0.97); }
+    .cta-btn svg { width: 17px; height: 17px; stroke: #0d0f14; stroke-width: 2.2; flex-shrink: 0; }
+
+    /* Loading state */
+    .cta-btn.loading { pointer-events: none; }
+    .spinner {
+      width: 17px; height: 17px;
+      border: 2.5px solid rgba(13,15,20,0.25);
+      border-top-color: #0d0f14;
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+      display: none;
+    }
+    .cta-btn.loading .spinner { display: block; }
+    .cta-btn.loading .btn-arrow { display: none; }
+    @keyframes spin { to{transform:rotate(360deg)} }
+
+    .selected-hint {
+      text-align: center;
+      margin-bottom: 24px;
+      min-height: 22px;
+      font-size: 0.875rem;
+      color: var(--muted);
+      animation: fadeUp 0.4s ease both;
+      transition: color 0.2s;
+    }
+    .selected-hint.active { color: var(--accent); }
+
+    @media (max-width: 600px) {
+      .sports-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 380px) {
+      .sports-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <div class="page">
+
+    <a href="index.html" class="back-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"/>
+        <polyline points="12 19 5 12 12 5"/>
+      </svg>
+      Back to home
+    </a>
+
+    <header class="header">
+
+      <h1 class="heading">Pick your <em>sport</em></h1>
+      <p class="sub">What do you want to play? We'll find it for you.</p>
+    </header>
+
+    <form id="sportForm" action="/api/booking/select-sport" method="POST">
+      <input type="hidden" name="sport" id="sportInput" value="" />
+
+      <div class="sports-grid">
+
+        <!-- Cricket -->
+        <label class="sport-card s-cricket" data-sport="cricket">
+          <input type="radio" name="sport_radio" value="cricket" />
+          <div class="check-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="sport-emoji">🏏</div>
+          <div class="sport-name">Cricket</div>
+          <div class="sport-tag">Bat & ball</div>
+        </label>
+
+        <!-- Football -->
+        <label class="sport-card s-football" data-sport="football">
+          <input type="radio" name="sport_radio" value="football" />
+          <div class="check-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="sport-emoji">⚽</div>
+          <div class="sport-name">Football</div>
+          <div class="sport-tag">Team sport</div>
+        </label>
+
+        <!-- Basketball -->
+        <label class="sport-card s-basketball" data-sport="basketball">
+          <input type="radio" name="sport_radio" value="basketball" />
+          <div class="check-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="sport-emoji">🏀</div>
+          <div class="sport-name">Basketball</div>
+          <div class="sport-tag">Court game</div>
+        </label>
+
+        <!-- Pickleball -->
+        <label class="sport-card s-pickleball" data-sport="pickleball">
+          <input type="radio" name="sport_radio" value="pickleball" />
+          <div class="check-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="sport-emoji">🏓</div>
+          <div class="sport-name">Pickleball</div>
+          <div class="sport-tag">Racquet sport</div>
+        </label>
+
+        <!-- Badminton -->
+        <label class="sport-card s-badminton" data-sport="badminton">
+          <input type="radio" name="sport_radio" value="badminton" />
+          <div class="check-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="sport-emoji">🏸</div>
+          <div class="sport-name">Badminton</div>
+          <div class="sport-tag">Shuttle sport</div>
+        </label>
+
+      </div>
+
+      <p class="selected-hint" id="selectedHint">Select a sport to continue</p>
+
+      <div class="cta-wrap">
+        <button type="submit" class="cta-btn" id="ctaBtn" disabled>
+          <div class="spinner"></div>
+          <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
+          Find venues
+        </button>
+      </div>
+    </form>
+
+  </div>
+
+  <script>
+    const cards   = document.querySelectorAll('.sport-card');
+    const ctaBtn  = document.getElementById('ctaBtn');
+    const hint    = document.getElementById('selectedHint');
+    const hidden  = document.getElementById('sportInput');
+    const form    = document.getElementById('sportForm');
+
+    const labels = {
+      cricket:    'Cricket selected — let\'s find you a pitch 🏏',
+      football:   'Football selected — time to hit the turf ⚽',
+      basketball: 'Basketball selected — court is calling 🏀',
+      pickleball: 'Pickleball selected — great choice! 🏓',
+      badminton:  'Badminton selected — shuttle up 🏸',
+    };
+
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        const sport = card.dataset.sport;
+
+        // Deselect all
+        cards.forEach(c => c.classList.remove('selected'));
+
+        // Select clicked
+        card.classList.add('selected');
+        card.querySelector('input[type="radio"]').checked = true;
+
+        // Update hidden field
+        hidden.value = sport;
+
+        // Update hint
+        hint.textContent = labels[sport];
+        hint.classList.add('active');
+
+        // Enable CTA
+        ctaBtn.disabled = false;
+      });
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (!hidden.value) return;
+
+      // Loading state
+      ctaBtn.classList.add('loading');
+      ctaBtn.disabled = true;
+
+      try {
+        const res = await fetch('/api/booking/select-sport', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sport: hidden.value }),
+        });
+
+        if (res.ok) {
+          // Redirect to the main booking page returned by backend
+          const data = await res.json();
+          window.location.href = data.redirect || '/booking/venues';
+        } else {
+          // Fallback: just navigate forward
+          window.location.href = `venues.html?sport=${hidden.value}`;
+        }
+      } catch (err) {
+        // No backend yet — navigate to next step with sport param
+        window.location.href = `venues.html?sport=${hidden.value}`;
+      }
+    });
+  </script>
+
+</body>
+</html>
