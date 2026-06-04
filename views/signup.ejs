@@ -314,7 +314,7 @@
 
   <h1>Create your account</h1>
   <p class="subtitle">Join thousands discovering unforgettable experiences.</p>
-  <% if (locals.error) { %>
+<% if (locals.error) { %>
    <p style="color:red;font-family: Lucida Sans;"><%= error %></p>
   <% } %>
   <form action="/user/signup" method="POST" novalidate>
