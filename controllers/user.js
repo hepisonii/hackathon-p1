@@ -8,7 +8,12 @@ async function handleGetUserSignUp(req,res){
     return res.render("signup");
 }
 
+async function handleGetUserSignUpVenue(req,res){
+    return res.render("venue_signup");
+}
+
 async function handlePostUserSignUp(req,res){
+    console.log("Body: ",req.body);
     const {fullname,username,password,age,gender,role,city} = req.body;
     const entry = await User.findOne({username});
     if(entry){
@@ -25,7 +30,9 @@ async function handlePostUserSignUp(req,res){
             age,
             gender,
             role,
-            city
+            city,
+            venue_name,
+            venue_address,
         });
     }
     else if(role === "participant"){
@@ -82,4 +89,5 @@ module.exports = {
     handleGetUserLogin,
     handlePostUserLogin,
     handleGetUserLogout,
+    handleGetUserSignUpVenue
 }

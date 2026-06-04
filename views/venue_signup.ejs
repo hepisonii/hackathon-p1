@@ -383,9 +383,9 @@
   <h1>Venue Owner Sign Up</h1>
   <p class="subtitle">List your venue and connect with thousands of event-goers across Gujarat.</p>
 
-  <form action="/venue-register" method="POST" novalidate>
+  <form action="/user/signup" method="POST" novalidate>
 
-    <input type="hidden" name="role" value="venue_owner" />
+    <input type="hidden" name="role" value="venue-owner" />
 
     <!-- Row 1: Username + Full Name -->
     <div class="row cols-2">
@@ -626,7 +626,7 @@
     </div>
 
     <!-- Participant Banner -->
-    <a class="venue-banner" href="/signup">
+    <a class="venue-banner" href="/user/signup/participant">
       <div class="venue-banner-left">
         <div class="venue-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="#c8a96e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
