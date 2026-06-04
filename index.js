@@ -15,7 +15,7 @@ app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(checkAuth());
 
-app.set(Path.resolve(__dirname, "./views"));
+app.set(Path.resolve(__dirname, "/views"));
 app.set("view engine","ejs")
 app.set("views", Path.resolve("./views"));
 
@@ -25,17 +25,13 @@ app.get("/", async (req,res) => {
     if(!user)
         return res.redirect("/user/login");
     else if(user.role === "venue-owner")
-        return res.sendFile("/home-venue-owner.html");
+    return res.sendFile(Path.resolve(__dirname, "./views/home-venue-owner.html"));
     else
-        return res.sendFile("/home-participant.html");
+    return res.sendFile(Path.resolve(__dirname, "./views/home-participant.html"));
 });
 
 app.get("/about", (req,res) => {
     return res.sendFile(Path.resolve(__dirname, "./views/about_us.html"));
-})
-
-app.post("/about", (req,res) => {
-    return res.redirect("/");
 })
 
 app.listen(PORT, () => {

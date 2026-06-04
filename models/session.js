@@ -6,8 +6,8 @@ const sessionSchema = new Schema({
         ref: "user",
     },
     players: {
-        type: Number,
-        default: 0,
+        type: Schema.Types.ObjectId,
+        ref: "player"
     },
     startTime: {
         type: Date,
@@ -19,13 +19,10 @@ const sessionSchema = new Schema({
         type: String,
         required: true,
     },
-    venue_name: {
-        type: String,
-        required: true,
-    },
-    venue_address: {
-        type: String,
-    },
+    is_locked: {
+        type: Boolean,
+        default: false,
+    }
 }, {timestamps: true});
 
 const Session = model("session", sessionSchema);

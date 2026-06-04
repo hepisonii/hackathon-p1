@@ -9,6 +9,14 @@ const playerSchema = new Schema({
         type:Schema.Types.ObjectId,
         ref: "user"
     },
+    role: {
+        type: String,
+        enum: ["batsman", "bowler", "all-rounder", "wicket-keeper"]
+    },
+    receipt: {
+        type: String,
+    },
+    
 }, {timestamps: true});
 
 const Player = model("player", playerSchema);
