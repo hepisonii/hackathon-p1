@@ -6,7 +6,7 @@ async function handleGetBooking(req,res){
 }
 
 async function handlePostBooking(req,res){
-    const sport = req.query.sport
+    const {sport} = req.body
     const city = req.user.city;
     const venues = await User.find(
   {
@@ -27,7 +27,12 @@ async function handlePostBooking(req,res){
     });
 }
 
+async function handleGetVenue(req,res){
+    return res.sendFile(path.resolve(__dirname, "../views/venue.html"));
+}
+
 module.exports = {
     handleGetBooking,
-    handlePostBooking
+    handlePostBooking,
+    handleGetVenue
 }

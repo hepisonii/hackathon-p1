@@ -11,7 +11,6 @@ const {
 } = require("../controllers/user");
 const { limiter } = require("../middlewares/auth");
 
-
 userRouter.get("/signup/participant",handleGetUserSignUp);
 userRouter.get("/signup/venue-owner",handleGetUserSignUpVenue);
 userRouter.post("/signup",upload.single("photo"), handlePostUserSignUp);
