@@ -443,7 +443,7 @@
           window.location.href = data.redirect || '/booking/venues';
         } else {
           // Fallback: just navigate forward
-          window.location.href = `venues.html?sport=${hidden.value}`;
+          window.location.href = `/booking?sport=${hidden.value}`;
         }
       } catch (err) {
         // No backend yet — navigate to next step with sport param
