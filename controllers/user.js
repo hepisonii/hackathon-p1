@@ -9,25 +9,22 @@ async function handleGetUserSignUp(req,res){
 }
 
 async function handlePostUserSignUp(req,res){
-    const {fullname,username,password,age,gender, qualifications,role} = req.body;
+    const {fullname,username,password,age,gender,role,city} = req.body;
     const entry = await User.findOne({username});
     if(entry){
         return res.render("signup", {
             error: "Username already exists"
         })
     }
-    let imageUrl = null;
 
-if (req.file) {
-    const photo = await cloudinary.uploader.upload(req.file.path, {
-        folder: "interview-app",
-    });
-    fs.unlinkSync(req.file.path);
-    imageUrl = photo.secure_url;
-    profileImageId = photo.public_id;
-}
     const user = await User.create({
-    
+        fullname,
+        username,
+        password,
+        age,
+        gender,
+        role,
+        city,
     });
     return res.redirect("/user/login");
 }
